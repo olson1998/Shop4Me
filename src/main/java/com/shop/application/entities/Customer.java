@@ -16,19 +16,13 @@ public class Customer {
 
     @Id
     @Column(name = "customer_id")
-    private long customer_id;
+    private long customerID;
 
     @Column(name="verified", nullable = false)
     private boolean isVerified;
 
     @Column(name = "email", nullable = false, length = 345, unique = true)
     private String email;
-
-    @Column(name = "username", nullable = false, length = 30)
-    private String username;
-
-    @Column(name = "password", nullable = false)
-    private String password;
 
     @Column(name = "phone", length = 20)
     private String phone;

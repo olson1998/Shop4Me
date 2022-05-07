@@ -22,6 +22,10 @@ public class Auction {
     @Column(name = "product_id", nullable = false)
     private Long product_id;
 
+    @Column(name = "buyer_id")
+    private Long customerID;
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "price", nullable = false, columnDefinition = "INT(11) UNSIGNED default 0")
     private double price;
 

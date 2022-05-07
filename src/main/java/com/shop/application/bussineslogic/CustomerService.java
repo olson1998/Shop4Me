@@ -10,11 +10,12 @@ import java.util.List;
 @AllArgsConstructor
 
 @Service
-public class CustomerService {
+public class CustomerService{
 
     private final CustomersRepo repository;
 
     public List<Customer> getAllCustomers(){
         return repository.findAll();
     }
+
 }
