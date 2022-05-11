@@ -37,6 +37,10 @@ public class AuthService implements UserDetailsService {
         details.getRoles().forEach(role->{
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         });
+        /*details.getRoles().getNames().forEach(role->
+            authorities.add(new SimpleGrantedAuthority(role))
+        );
+        log.info("User: " + details.getUsername() +" authorities: " + details.getRoles().getNames());*/
         return new org.springframework.security.core.userdetails.User(
                 details.getUsername(),
                 encoder.encode(details.getPassword()),
@@ -47,6 +51,7 @@ public class AuthService implements UserDetailsService {
     public boolean saveNewUser(LoginDetails details){
         boolean isunique = repository.isUserWithLogin(details.getUsername());
         if(isunique){
+            details.setPassword(encoder.encode(details.getPassword()));
             repository.save(details);
         }
         log.info("Saved new user: " + details.getUsername());

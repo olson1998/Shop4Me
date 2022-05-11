@@ -32,7 +32,7 @@ public class CustomersSessionsController {
         this.service.overTheSession(session_id);
     }
 
-    @GetMapping(path = "/request/new/")
+    @GetMapping(path = "/request/new")
     public String requestNewSessionID(){
         return service.sendNewSessionID();
     }

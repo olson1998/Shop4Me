@@ -19,8 +19,8 @@ public class Role {
 
     @Id
     @Column(name = "customer_id")
-    private long customerID;
+    private int customerID;
 
-    @Column(name ="role", nullable = false)
+    @Column(name ="name", nullable = false)
     private String name;
 }
