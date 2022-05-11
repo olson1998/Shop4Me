@@ -1,7 +1,7 @@
 package com.shop.application.bussineslogic;
 
-import com.shop.application.entities.LoginDetails;
-import com.shop.application.repositories.LoginDetailsRepo;
+import com.shop.application.entities.userdb.LoginDetails;
+import com.shop.application.repositories.userdbdao.LoginDetailsRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,7 +31,7 @@ public class AuthService implements UserDetailsService {
             throw new UsernameNotFoundException("user has not been found in DB");
         }
         else{
-            log.info("User '" + username +"' has been found in DB!");
+            log.info("User: " + details.getUsername() + " found in db!");
         }
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         details.getRoles().forEach(role->{
@@ -49,6 +49,7 @@ public class AuthService implements UserDetailsService {
         if(isunique){
             repository.save(details);
         }
+        log.info("Saved new user: " + details.getUsername());
         return isunique;
     }
 

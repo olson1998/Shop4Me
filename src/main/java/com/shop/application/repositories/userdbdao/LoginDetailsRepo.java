@@ -1,10 +1,9 @@
-package com.shop.application.repositories;
+package com.shop.application.repositories.userdbdao;
 
-import com.shop.application.entities.LoginDetails;
+import com.shop.application.entities.userdb.LoginDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Repository

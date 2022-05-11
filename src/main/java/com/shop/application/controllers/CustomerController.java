@@ -1,7 +1,7 @@
 package com.shop.application.controllers;
 
 import com.shop.application.bussineslogic.CustomerService;
-import com.shop.application.entities.Customer;
+import com.shop.application.entities.auctionsdb.Customer;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

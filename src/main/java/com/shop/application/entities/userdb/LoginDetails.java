@@ -1,4 +1,4 @@
-package com.shop.application.entities;
+package com.shop.application.entities.userdb;
 
 import lombok.*;
 
@@ -17,12 +17,12 @@ public class LoginDetails {
 
     @Id
     @Column(name = "customer_id")
-    private long customerID;
+    private int customerID;
 
     @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "pass", nullable = false)
     private String password;
 
     @OneToMany(mappedBy = "customerID" , fetch = FetchType.EAGER)

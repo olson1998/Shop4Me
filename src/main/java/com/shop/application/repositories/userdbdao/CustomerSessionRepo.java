@@ -1,10 +1,11 @@
-package com.shop.application.repositories;
+package com.shop.application.repositories.userdbdao;
 
-import com.shop.application.entities.CustomerSession;
+import com.shop.application.entities.userdb.CustomerSession;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
@@ -13,6 +14,7 @@ import java.time.ZoneId;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Repository
 public interface CustomerSessionRepo extends JpaRepository<CustomerSession, Long> {
 
     default Optional<CustomerSession> getCustomerSessionBySession_id(String session_id){
@@ -24,7 +26,7 @@ public interface CustomerSessionRepo extends JpaRepository<CustomerSession, Long
     default void registerNewCustomerSession(String session_id){
         CustomerSession customerSession = new CustomerSession(
                 session_id,
-                "anonymous",
+                1,
                 Timestamp.valueOf(
                         LocalDateTime.now(ZoneId.systemDefault())
                 ),

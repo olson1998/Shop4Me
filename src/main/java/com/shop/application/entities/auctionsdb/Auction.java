@@ -1,4 +1,4 @@
-package com.shop.application.entities;
+package com.shop.application.entities.auctionsdb;
 
 import lombok.*;
 
@@ -17,16 +17,16 @@ public class Auction {
 
     @Id
     @Column(name = "auction_id")
-    private Long auction_id;
+    private int auction_id;
 
     @Column(name = "product_id", nullable = false)
-    private Long product_id;
+    private int product_id;
 
     @Column(name = "buyer_id")
     private Long customerID;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "price", nullable = false, columnDefinition = "INT(11) UNSIGNED default 0")
+    @Column(name = "price", nullable = false, columnDefinition = "default 0")
     private double price;
 
     @Column(name = "start_date", nullable = false)
@@ -35,7 +35,7 @@ public class Auction {
     @Column(name = "finish_date")
     private Timestamp finish_date;
 
-    /*@OneToOne(mappedBy = "product_id", fetch = FetchType.EAGER)
+    /*@OneToOne
     private Product product;*/
 
 }

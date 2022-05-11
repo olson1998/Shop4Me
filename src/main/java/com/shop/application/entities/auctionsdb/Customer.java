@@ -1,4 +1,4 @@
-package com.shop.application.entities;
+package com.shop.application.entities.auctionsdb;
 
 import lombok.*;
 
@@ -16,7 +16,7 @@ public class Customer {
 
     @Id
     @Column(name = "customer_id")
-    private long customerID;
+    private int customerID;
 
     @Column(name="verified", nullable = false)
     private boolean isVerified;
@@ -42,10 +42,10 @@ public class Customer {
     @Column(name = "street_address", length = 100)
     private String street_address;
 
-    @Column(name = "unit", columnDefinition = "INT(11) UNSIGNED")
+    @Column(name = "unit")
     private Integer unit;
 
-    @Column(name="flat", columnDefinition= "INT(11) UNSIGNED")
+    @Column(name="flat", length = 80)
     private Integer flat;
 
     @Column(name="city", length = 50)

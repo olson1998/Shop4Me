@@ -1,4 +1,4 @@
-package com.shop.application.entities;
+package com.shop.application.entities.auctionsdb;
 
 import lombok.*;
 

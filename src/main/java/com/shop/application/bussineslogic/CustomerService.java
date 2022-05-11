@@ -1,7 +1,7 @@
 package com.shop.application.bussineslogic;
 
-import com.shop.application.entities.Customer;
-import com.shop.application.repositories.CustomersRepo;
+import com.shop.application.entities.auctionsdb.Customer;
+import com.shop.application.repositories.auctionsdbdao.CustomersRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.shop.application.entities;
+package com.shop.application.entities.userdb;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
@@ -23,8 +23,8 @@ public class CustomerSession {
     @Column(name = "session_id", length = 16)
     private String session_id;
 
-    @Column(name="user", length = 50, nullable = false)
-    private String user_name;
+    @Column(name="logged_user_id")
+    private int user_name;
 
     @Column(name="session_start_time", nullable = false)
     private Timestamp session_start_time;

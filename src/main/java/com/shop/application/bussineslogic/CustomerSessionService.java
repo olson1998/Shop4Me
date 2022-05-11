@@ -1,7 +1,7 @@
 package com.shop.application.bussineslogic;
 
-import com.shop.application.entities.CustomerSession;
-import com.shop.application.repositories.CustomerSessionRepo;
+import com.shop.application.entities.userdb.CustomerSession;
+import com.shop.application.repositories.userdbdao.CustomerSessionRepo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Service;

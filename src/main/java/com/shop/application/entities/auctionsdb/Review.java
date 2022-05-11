@@ -1,4 +1,4 @@
-package com.shop.application.entities;
+package com.shop.application.entities.auctionsdb;
 
 import lombok.*;
 
@@ -22,7 +22,7 @@ public class Review {
     @Column(name="review_id")
     private int review_id;
 
-    @Column(name="product_id", nullable = false, unique = true ,columnDefinition = "INT(11) UNSIGNED")
+    @Column(name="product_id", nullable = false)
     private int product_id;
 
     @Column(name="publishing_date", nullable = false)
@@ -31,7 +31,7 @@ public class Review {
     @Column(name="commentator_name", nullable = false)
     private String commentator_name;
 
-    @Column(name="stars", nullable = false, columnDefinition = "TINYINT")
+    @Column(name="stars", nullable = false)
     private byte stars;
 
     @Column(name="text", columnDefinition = "text")

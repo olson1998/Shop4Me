@@ -1,6 +1,6 @@
 package com.shop.application.bussineslogic;
 
-import com.shop.application.repositories.AuctionsRepo;
+import com.shop.application.repositories.auctionsdbdao.AuctionsRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
