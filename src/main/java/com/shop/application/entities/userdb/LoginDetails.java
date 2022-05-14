@@ -1,5 +1,6 @@
 package com.shop.application.entities.userdb;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.util.List;
 @Data
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 
@@ -17,6 +19,7 @@ public class LoginDetails {
 
     @Id
     @Column(name = "customer_id")
+    @JsonIgnore
     private int customerID;
 
     @Column(name = "username", nullable = false)
@@ -25,6 +28,7 @@ public class LoginDetails {
     @Column(name = "pass", nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "customerID" , fetch = FetchType.EAGER)
-    private List<Role> roles;
+    @JsonIgnore
+    @Transient
+    private List<String> roles;
 }

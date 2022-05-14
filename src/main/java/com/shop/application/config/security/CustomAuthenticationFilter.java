@@ -32,22 +32,19 @@ import java.util.stream.Collectors;
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final BCryptPasswordEncoder encoder;
+    //private final BCryptPasswordEncoder encoder;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        //super.attemptAuthentication(request, response);
         String username = request.getParameter("username");
         String pass = request.getParameter("password");
-        log.info("attempted to logged: " + username +
-                " authenticated with password: " + encoder.encode(pass)
-        );
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, pass);
         return authenticationManager.authenticate(token);
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
         org.springframework.security.core.userdetails.User user = (User) authResult.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256("auth".getBytes());
         String access_token = JWT.create()
@@ -64,9 +61,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String refresh_token = JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt( new Date(System.currentTimeMillis() + 20 * 60 *1000))
-                .withIssuer("olson1998")
+                .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
 
+        //response.setHeader("access_token", access_token);
+        //response.setHeader("refresh_token", refresh_token);
         HashMap<String, String> tokens = new HashMap<>();
         tokens.put("access_token", access_token);
         tokens.put("refresh_token", refresh_token);
@@ -75,8 +74,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         log.warn("wrong logging credentials... access forbidden");
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getOutputStream().print("wrong logging credentials... access forbidden");
+        //throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 }

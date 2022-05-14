@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Log4j2
 
+@Getter
 @AllArgsConstructor
 
 @Service

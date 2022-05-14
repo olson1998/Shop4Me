@@ -1,22 +1,28 @@
 package com.shop.application.entities.roledb;
 
 import lombok.*;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import javax.persistence.Entity;
 import java.util.List;
 
 @Data
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 
-@Entity
+@Document("Roles")
 public class Roles {
 
     @Id
-    private int customer_id;
+    private ObjectId _id;
 
-    private List<String> names;
+    @Field("customer_id")
+    private int customerID;
+
+    @Field("roles")
+    private List<String> roles;
 }
