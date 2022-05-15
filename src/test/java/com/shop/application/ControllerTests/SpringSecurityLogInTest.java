@@ -4,19 +4,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.shop.application.entities.userdb.LoginDetails;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
-
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -28,15 +27,13 @@ public class SpringSecurityLogInTest extends MockConfigSetup{
     private final LoginDetails existing_user = new LoginDetails(
             2,
             "olson",
-            "pass",
-            new ArrayList<>()
+            "pass"
     );
 
     private final LoginDetails non_existing_user = new LoginDetails(
             0,
             "NOT_EXIST",
-            "NOT_EXIST",
-            new ArrayList<>()
+            "NOT_EXIST"
     );
 
     @BeforeEach
