@@ -20,8 +20,7 @@ public class MongoClientConfig {
     @Bean
     public MongoClient mongo() {
         ConnectionString connectionString = new ConnectionString(
-                //"mongodb://user-roles-mongodb.mongo.cosmos.azure.com:10255/user-roles-mongodb?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000"
-                "mongodb://user-roles-mongodb:YKb2LMim5osizDoiV08u8CsrAKKN8KOTV7oozV7v0qoeVwFRrfjLGBF9fSvDdzvTg4CBda1Is1wC5CtHTRtA8A==@user-roles-mongodb.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@user-roles-mongodb@"
+                DataSourceURL.roles_url
         );
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)

@@ -18,8 +18,6 @@ import javax.sql.DataSource;
 import java.util.Objects;
 import java.util.Properties;
 
-@Log4j2
-
 @AllArgsConstructor
 
 @Configuration
@@ -40,7 +38,6 @@ public class UserDataSourceConnectionConfig {
         dataSource.setUrl(env.getProperty("spring.user.datasource.url"));
         dataSource.setUsername(env.getProperty("spring.user.datasource.username"));
         dataSource.setPassword(env.getProperty("spring.user.datasource.password"));
-        log.info("User's data source url: " + dataSource.getUrl());
         return dataSource;
     }
 
