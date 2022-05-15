@@ -23,11 +23,6 @@ public class CustomerController {
         return service.getAllCustomers();
     }
 
-    @PostMapping(path = "/login")
-    public void saveNewCustomerAccount(@RequestBody LoginDetails details){
-        authService.loadUserByUsername(details.getUsername());
-    }
-
     @PostMapping("/save")
     public String saveNewCustomerLoginDetails(@RequestBody LoginDetails details){
         return authService.saveNewUser(details);
