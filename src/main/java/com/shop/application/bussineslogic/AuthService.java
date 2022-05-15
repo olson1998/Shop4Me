@@ -1,5 +1,9 @@
 package com.shop.application.bussineslogic;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.shop.application.entities.roledb.Roles;
 import com.shop.application.entities.userdb.LoginDetails;
 import com.shop.application.repositories.rolesdbdao.RolesRepo;
@@ -36,18 +40,16 @@ public class AuthService implements UserDetailsService {
         LoginDetails details = new LoginDetails(
                 -1,
                 "NOT_PROVIDED",
-                encoder.encode("NOT_PROVIDED"),
-                new ArrayList<>()
+                encoder.encode("NOT_PROVIDED")
         );
         if(auth.isEmpty()){
             log.warn("User '"+ username +"' has not been found...");
         }
         else {
             details = auth.get();
-            details.setRoles(rolesRepo.getAllRolesNamesByCustomerID(details.getCustomerID()));
-            details.getRoles().forEach(role->{
-                authorities.add(new SimpleGrantedAuthority(role));
-            });
+            rolesRepo.getAllRolesNamesByCustomerID(details.getCustomerID()).forEach(role->
+                    authorities.add(new SimpleGrantedAuthority(role))
+            );
             log.info("User '" + details.getUsername() + "' has been found in db! Granted authorities: " + authorities);
         }
         return new org.springframework.security.core.userdetails.User(
@@ -57,41 +59,66 @@ public class AuthService implements UserDetailsService {
         );
     }
 
-    public String saveNewUser(LoginDetails details){
-        String response = "";
-        boolean isunique = false;
+    public Integer saveNewUser(LoginDetails details){
+        Integer generated_id = null;
         if(details.getUsername() == null){
-            response ="Given username is empty!";
-            log.error(response);
+            log.error("Given username is empty!");
         }
         else if(details.getPassword()==null){
-            response = "Given password is empty!";
-            log.error(response);
+            log.error("Given password is empty!");
         }
-        else{
-            isunique = repository.isUserWithLogin(details.getUsername());
-        }
-        if(isunique){
+        if(!repository.existsLoginDetailsByUsername(details.getUsername())){
+            generated_id  = generateNewCustomerID();
             details.setPassword(encoder.encode(details.getPassword()));
-            details.setCustomerID(generateNewCustomerID());
+            details.setCustomerID(generated_id);
             repository.save(details);
             rolesRepo.save(new Roles(
                     new ObjectId(),
                     details.getCustomerID(),
                     Collections.singletonList("LOGGED_USER")
             ));
-            response = "Saved new user: " + details.getUsername();
-            log.info(response);
+            log.info("Saved new user: '" + details.getUsername() +"', given id: '" + generated_id + "'");
         }
         else{
-            response = "Couldn't save new user... " + details.toString();
-            log.warn(response);
+            log.warn("Couldn't save new user... " + details.toString());
+        }
+        return generated_id;
+    }
+
+    public String deleteUser(LoginDetails details){
+        String response = "Couldn't delete the user: '"+details.getUsername()+
+                "', with id: '" + details.getCustomerID() +"'";
+        if(repository.existsLoginDetailsByUsername(details.getUsername())){
+            this.repository.deleteByCustomerID(details.getCustomerID());
+        }
+        if(repository.existsLoginDetailsByUsername(details.getUsername())){
+            response = "Deleted user: '"+details.getUsername()+
+                    "', with id: '" + details.getCustomerID() +"'";
         }
         return response;
     }
 
-    public void deleteUser(LoginDetails details){
-        this.repository.deleteByCustomerID(details.getCustomerID());
+    public Integer getCustomerIDByUsernameGotFromToken(String token){
+        String username = getUsernameFromToken(token);
+        Integer id = null;
+        if(repository.existsLoginDetailsByUsername(username)){
+            id = repository.getCustomerIDbyUsername(username);
+            log.info("Found id: '" + id + "' for user: '" + username + "'");
+        }
+        else{
+            log.error("user has not been found...");
+        }
+        return id;
+    }
+
+    private String getUsernameFromToken(String header){
+        String token = header.substring("Auth ".length());
+        Algorithm algorithm = Algorithm.HMAC256("auth".getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(token);
+        String username = decodedJWT.getSubject();
+        log.info("Read username: '" + username + "' from token");
+        return username;
     }
 
     private int generateNewCustomerID(){

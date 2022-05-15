@@ -12,8 +12,6 @@ public interface RolesRepo extends MongoRepository<Roles, Double> {
 
     Optional<Roles> findByCustomerID(int customer_id);
 
-    List<Roles> findRolesByCustomerID(int customer_id);
-
     default List<String> getAllRolesNamesByCustomerID(int customer_id){
         List<String> names = new ArrayList<>();
         Optional<Roles> roles = findByCustomerID(customer_id);

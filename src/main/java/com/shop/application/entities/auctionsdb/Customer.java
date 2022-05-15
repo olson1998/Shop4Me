@@ -7,6 +7,7 @@ import javax.persistence.*;
 @Data
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 
@@ -54,6 +55,21 @@ public class Customer {
     @Column(name="state", length = 50)
     private String state;
 
+    @Column(name = "country", length = 50)
+    private String country;
+
     @Column(name="zip", length = 50)
     private String ZIP;
+
+    @Override
+    public String toString() {
+        return prefix + ". " + name + " " + surname + "\n" +
+                phone + "\n" +
+                building_name + "\n"
+                + street_address + " " + unit + "/" +flat + "\n" +
+                ZIP + " " + city + "\n" +
+                state + "\n" +
+                country
+                ;
+    }
 }

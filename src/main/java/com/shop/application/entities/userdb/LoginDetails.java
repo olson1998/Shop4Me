@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 
@@ -27,8 +27,4 @@ public class LoginDetails {
 
     @Column(name = "pass", nullable = false)
     private String password;
-
-    @JsonIgnore
-    @Transient
-    private List<String> roles;
 }
