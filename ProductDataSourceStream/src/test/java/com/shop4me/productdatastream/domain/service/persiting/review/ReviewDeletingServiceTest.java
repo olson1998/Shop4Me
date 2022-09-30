@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import static com.shop4me.productdatastream.domain.model.data.ReviewEntityJpqlRepository.REVIEW_DELETE_JPQL;
 import static com.shop4me.productdatastream.domain.model.request.ReviewOperationRequestTestImpl.reviewDeleteRequest;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +35,9 @@ class ReviewDeletingServiceTest {
     private final ReviewDeleteRequest request = reviewDeleteRequest(
             new Review(1L, 1L, 1L, null, (byte) 10, null, null)
     );
+
+    public static final String REVIEW_DELETE_JPQL =
+            "delete from ReviewEntity r where r.id= 1 and r.reviewerId= 1 and r.productId= 1";
 
     @Test
     void shouldExecuteJpqlQueryCreatedFromReviewDeleteRequest(){
