@@ -26,7 +26,7 @@ public class Category implements CategoryDto {
 
     @Override
     public CategoryDao toDao() {
-        return new CategoryEntity(id, name, path);
+        return new CategoryEntity(id, path, name);
     }
 
     @Override
