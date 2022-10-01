@@ -26,7 +26,7 @@ public class ProductSearchRequestImpl implements ProductSearchRequest {
 
     @Override
     public String writeJpqlQuery(){
-        var query = new StringBuilder("select p.id from ProductEntity p ");
+        var query = new StringBuilder("select distinct p.id from ProductEntity p ");
         var samePropAndOperatorSet =
                 collectSamePropertyAndOperationCombinations();
         var combinationsList = writeCombinationsList(samePropAndOperatorSet);
@@ -146,7 +146,8 @@ public class ProductSearchRequestImpl implements ProductSearchRequest {
         Arrays.stream(filters)
                 .filter(filter -> filter.getProperty().equals(CATEGORY.name()))
                 .findFirst()
-                .ifPresentOrElse(f-> query.append("left outer join p.categoriesSet c where "),
+                .ifPresentOrElse(
+                        f-> query.append("left outer join p.categoriesSet c where "),
                         ()-> query.append("where ")
                 );
     }

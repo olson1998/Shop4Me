@@ -27,9 +27,6 @@ class ProductObtainingServiceTest {
     @Mock
     private TypedQuery<ProductEntity> query;
 
-    @Captor
-    private ArgumentCaptor<String> jpqlCaptor;
-
     private final long[] idArray = {1L, 2L, 3L};
 
     private static final String PRODUCT_OBTAIN_JPQL =
@@ -37,15 +34,22 @@ class ProductObtainingServiceTest {
 
     @Test
     void shouldExecuteJpqlCreatedByRequest(){
-        given(entityManager.createQuery(anyString(), ProductEntity.class))
+        given(entityManager.createQuery(PRODUCT_OBTAIN_JPQL, ProductEntity.class))
                 .willReturn(query);
 
         productObtainingService().execute(productObtainRequest(idArray));
 
-        then(entityManager).should().createQuery(jpqlCaptor.capture(), ProductEntity.class);
+        then(entityManager).should().createQuery(PRODUCT_OBTAIN_JPQL, ProductEntity.class);
+    }
 
-        assertThat(jpqlCaptor.getValue())
-                .isEqualTo(PRODUCT_OBTAIN_JPQL);
+    @Test
+    void shouldQuerySelectionResult(){
+        given(entityManager.createQuery(PRODUCT_OBTAIN_JPQL, ProductEntity.class))
+                .willReturn(query);
+
+        productObtainingService().execute(productObtainRequest(idArray));
+
+        then(query).should().getResultList();
     }
 
     private ProductObtainingService productObtainingService(){

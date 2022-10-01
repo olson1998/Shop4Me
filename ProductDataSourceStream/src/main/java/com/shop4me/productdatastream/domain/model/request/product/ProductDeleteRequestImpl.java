@@ -19,7 +19,7 @@ public class ProductDeleteRequestImpl implements ProductDeleteRequest {
 
     @Override
     public String writeJpqlQuery(){
-        return  "delete ProductEntity p where p.id= "+product.getId() +
+        return  "delete from ProductEntity p where p.id= "+product.getId() +
                 " and p.name= '" + product.getName()+"'";
     }
 

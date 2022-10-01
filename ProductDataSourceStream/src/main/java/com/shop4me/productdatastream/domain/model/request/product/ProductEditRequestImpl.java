@@ -58,7 +58,7 @@ public class ProductEditRequestImpl implements ProductEditRequest {
                     query.append("p.name=");
                 }
                 case DESCRIPTION -> {
-                    query.append("p.description= ");
+                    query.append("p.description=");
                 }
             }
             query.append("'").append(val).append("'");

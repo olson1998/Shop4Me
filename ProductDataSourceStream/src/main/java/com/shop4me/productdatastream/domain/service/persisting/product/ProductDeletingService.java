@@ -4,11 +4,14 @@ import com.shop4me.productdatastream.domain.port.persisting.repositories.product
 import com.shop4me.productdatastream.domain.port.requesting.ProductDeleteRequest;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.EntityManager;
 import java.util.Map;
 
 import static java.util.Map.entry;
+
+@Slf4j
 
 @AllArgsConstructor
 
@@ -18,6 +21,8 @@ public class ProductDeletingService implements ProductDeletingExecutor {
 
     @Override
     public Map<String, Integer> execute(@NonNull ProductDeleteRequest deleteRequest){
+        log.info(deleteRequest.toString());
+
         var jpql = deleteRequest.writeJpqlQuery();
         var affectedRows = executeJpql(productEntityManager, jpql);
         return Map.ofEntries(
