@@ -1,5 +1,6 @@
 package com.shop4me.productdatastream.domain.model.data.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.CategoryEntity;
 import com.shop4me.productdatastream.domain.port.persisting.dao.CategoryDao;
@@ -25,11 +26,13 @@ public class Category implements CategoryDto {
     private String name;
 
     @Override
+    @JsonIgnore
     public CategoryDao toDao() {
         return new CategoryEntity(id, path, name);
     }
 
     @Override
+    @JsonIgnore
     public String getAbsolutePath() {
         return path + ".\"" + name + "\"";
     }
@@ -45,6 +48,7 @@ public class Category implements CategoryDto {
     }
 
     @Override
+    @JsonIgnore
     public String toString() {
         return getAbsolutePath();
     }

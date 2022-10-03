@@ -1,5 +1,6 @@
 package com.shop4me.productdatastream.domain.model.data.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.ImageUrlEntity;
 import com.shop4me.productdatastream.domain.port.persisting.dao.ImageUrlDao;
@@ -27,6 +28,7 @@ public class ImageUrl implements ImageUrlDto {
     private Boolean visibility;
 
     @Override
+    @JsonIgnore
     public ImageUrlDao toDao() {
         return new ImageUrlEntity(id, productId, url, visibility);
     }

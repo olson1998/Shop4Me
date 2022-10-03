@@ -1,5 +1,6 @@
 package com.shop4me.productdatastream.domain.model.data.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.ProductEntity;
@@ -13,6 +14,7 @@ import com.shop4me.productdatastream.domain.port.persisting.dto.entity.ReviewDto
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,6 +50,7 @@ public class Product implements ProductDto {
 
 
     @Override
+    @JsonIgnore
     public ProductDao toDao() {
         return new ProductEntity(
                 id,
@@ -57,10 +60,16 @@ public class Product implements ProductDto {
     }
 
     @Override
+    @JsonIgnore
     public String toString() {
         return "Product{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @VisibleForTesting
+    public Product(String name) {
+        this.name = name;
     }
 }

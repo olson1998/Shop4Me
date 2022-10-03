@@ -1,5 +1,6 @@
 package com.shop4me.productdatastream.domain.model.data.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.ReviewEntity;
@@ -40,6 +41,7 @@ public class Review implements ReviewDto {
     private String publishingTimeStamp;
 
     @Override
+    @JsonIgnore
     public String toString() {
         return "Review{" +
                 "id=" + id +
@@ -49,6 +51,7 @@ public class Review implements ReviewDto {
     }
 
     @Override
+    @JsonIgnore
     public ReviewDao toDao() {
         return new ReviewEntity(
                 id,
