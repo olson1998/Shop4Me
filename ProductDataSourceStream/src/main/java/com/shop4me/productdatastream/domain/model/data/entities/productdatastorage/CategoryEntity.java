@@ -44,6 +44,10 @@ public class CategoryEntity implements CategoryDao {
         this.name = name;
     }
 
+    public CategoryEntity(Long id) {
+        this.id = id;
+    }
+
     @Override
     public CategoryDto toDto() {
         return new Category(id, path, name);

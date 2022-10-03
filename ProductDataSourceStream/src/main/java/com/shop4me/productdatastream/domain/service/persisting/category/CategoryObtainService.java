@@ -1,7 +1,6 @@
 package com.shop4me.productdatastream.domain.service.persisting.category;
 
 import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.CategoryEntity;
-import com.shop4me.productdatastream.domain.model.request.category.CategoryObtainRequestImpl;
 import com.shop4me.productdatastream.domain.port.persisting.dto.entity.CategoryDto;
 import com.shop4me.productdatastream.domain.port.persisting.repositories.category.CategoryObtainExecutor;
 import com.shop4me.productdatastream.domain.port.requesting.CategoryObtainRequest;
