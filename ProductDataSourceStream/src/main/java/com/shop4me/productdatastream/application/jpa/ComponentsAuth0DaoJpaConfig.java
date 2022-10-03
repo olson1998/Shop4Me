@@ -1,7 +1,6 @@
-package com.shop4me.productdatastream.application.data;
+package com.shop4me.productdatastream.application.jpa;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.dialect.MariaDB103Dialect;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +19,7 @@ import static org.hibernate.cfg.AvailableSettings.*;
 @Slf4j
 
 @Configuration
-public class SecurityCredentialsDataStoreJpaConfig {
+public class ComponentsAuth0DaoJpaConfig {
 
 
     @Value("${spring.datasource.driver-class-name}")
@@ -41,9 +40,18 @@ public class SecurityCredentialsDataStoreJpaConfig {
     @Value("${spring.datasource.components-security-credentials.password}")
     private String password;
 
+    @Value("${spring.datasource.components-security-credentials.dialect}")
+    private String mySqlDialect;
+
+    @Value("${spring.datasource.components-security-credentials.storage-engine}")
+    private String storageEngine;
+
+    @Value("${spring.datasource.components-security-credentials.hbm2ddl}")
+    private String hbm2ddl;
+
     @Bean
     public DataSource securityCredentialsDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        var dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(Objects.requireNonNull(driver));
         dataSource.setUrl(url);
         dataSource.setUsername(username);
@@ -54,10 +62,9 @@ public class SecurityCredentialsDataStoreJpaConfig {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean securityCredentialsEntitiesManager() {
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        var vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
-        LocalContainerEntityManagerFactoryBean em
-                = new LocalContainerEntityManagerFactoryBean();
+        var em = new LocalContainerEntityManagerFactoryBean();
         em.setPersistenceUnitName(persistenceUnitName);
         em.setDataSource(securityCredentialsDataSource());
         em.setPackagesToScan(entitiesPackage);
@@ -68,8 +75,7 @@ public class SecurityCredentialsDataStoreJpaConfig {
 
     @Bean
     public PlatformTransactionManager securityCredentialsTransactionManager() {
-        JpaTransactionManager transactionManager
-                = new JpaTransactionManager();
+        var transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(
                 securityCredentialsEntitiesManager().getObject()
         );
@@ -77,25 +83,31 @@ public class SecurityCredentialsDataStoreJpaConfig {
     }
 
     private Properties jpaProperties(){
-        Properties jpaProperties = new Properties();
-        jpaProperties.put(DIALECT, MariaDB103Dialect.class.getName());
-        jpaProperties.put(STORAGE_ENGINE, "InnoDB");
-        jpaProperties.put(HBM2DDL_AUTO, "update");
+        var jpaProperties = new Properties();
+        jpaProperties.put(DIALECT, mySqlDialect);
+        jpaProperties.put(STORAGE_ENGINE, storageEngine);
+        jpaProperties.put(HBM2DDL_AUTO, hbm2ddl);
         return jpaProperties;
     }
 
     private void establishingConnectionLog(DataSource dataSource) {
         try {
-            String catalog = dataSource.getConnection().getCatalog();
-            log.info("Connection={driver='{}', catalog='{}', user='{}'}",
-                    driver,
+            var catalog = dataSource.getConnection().getCatalog();
+            log.debug("{}: MySql: [url: '{}', user: '{}', password: {} characters, catalog: '{}', storage engine: '{}']",
+                    persistenceUnitName,
+                    url,
+                    username,
+                    password.length(),
                     catalog,
-                    username
+                    storageEngine
             );
         } catch (java.sql.SQLException e) {
-            log.error("Connection failed={driver='{}', user='{}', reason='{}'}",
+            log.error("{}: MySql: [url: '{}', user: '{}', password: {} characters, storage engine: '{}'] ERROR: {}",
+                    persistenceUnitName,
                     driver,
                     username,
+                    password,
+                    storageEngine,
                     e.toString()
             );
         }

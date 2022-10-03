@@ -9,6 +9,6 @@ import java.util.Map;
 public interface ProductSavingExecutor {
 
     @Modifying
-    @Transactional("productDbTransactionManager")
+    @Transactional("productDataStreamTransactionManager")
     Map<String, String> execute(ProductSaveRequest request);
 }

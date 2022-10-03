@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ProductSearchingExecutor {
 
-    @Transactional("productDbTransactionManager")
+    @Transactional("productDataStreamTransactionManager")
     List<Long> execute(ProductSearchRequest request);
 }

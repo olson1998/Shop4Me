@@ -1,5 +1,6 @@
 package com.shop4me.productdatastream.application.configuration;
 
+import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.H2Dialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,25 +31,35 @@ public class H2Shop4MeSecurityCredentialsDataSourceConfig {
     @Value("${spring.jpa.components-security-credentials.package}")
     private String entitiesPackage;
 
+    @Value("${spring.jpa.components-security-credentials.persistence.unit-name}")
+    private String persistenceUnitName;
+
+    private final String url =
+            "jdbc:h2:mem:authdb;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;DEFAULT_LOCK_TIMEOUT=10000;LOCK_MODE=0";
+
+    private final Class<? extends java.sql.Driver> driverClass = org.h2.Driver.class;
+
+    private final Class<? extends Dialect> mySqlDialectClass = H2Dialect.class;
+
     @Bean
     public DataSource securityCredentialsDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(Objects.requireNonNull(driver));
+        var dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driverClass.getName());
         dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:authdb;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;DEFAULT_LOCK_TIMEOUT=10000;LOCK_MODE=0");
+        dataSource.setUrl(url);
         dataSource.setUsername("auth");
         dataSource.setPassword("pass");
-        log.info("Connection={'org.h2.Driver', catalog='authdb', user='auth'}");
+        logTestConnection(dataSource);
         return dataSource;
     }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean securityCredentialsEntitiesManager() {
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        var vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
-        LocalContainerEntityManagerFactoryBean em
-                = new LocalContainerEntityManagerFactoryBean();
-        em.setPersistenceUnitName("shop4me-sc-test");
+
+        var em = new LocalContainerEntityManagerFactoryBean();
+        em.setPersistenceUnitName(persistenceUnitName+"-test");
         em.setDataSource(securityCredentialsDataSource());
         em.setPackagesToScan(entitiesPackage);
         em.setJpaVendorAdapter(vendorAdapter);
@@ -58,8 +69,7 @@ public class H2Shop4MeSecurityCredentialsDataSourceConfig {
 
     @Bean
     public PlatformTransactionManager securityCredentialsTransactionManager() {
-        JpaTransactionManager transactionManager
-                = new JpaTransactionManager();
+        var transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(
                 securityCredentialsEntitiesManager().getObject()
         );
@@ -67,10 +77,26 @@ public class H2Shop4MeSecurityCredentialsDataSourceConfig {
     }
 
     private Properties jpaProperties(){
-        Properties jpaProperties = new Properties();
+        var jpaProperties = new Properties();
         jpaProperties.put(DIALECT, H2Dialect.class.getName());
         jpaProperties.put(HBM2DDL_AUTO, "create");
         return jpaProperties;
     }
 
+    private void logTestConnection(DataSource dataSource){
+        try {
+            var catalog = dataSource.getConnection().getCatalog();
+            log.info("{}: MySql: [url: '{}', catalog: '{}']",
+                    persistenceUnitName+"-test",
+                    url,
+                    catalog
+            );
+        } catch (java.sql.SQLException e) {
+            log.error("{}: MySql: [url: '{}'] ERROR: {}",
+                    persistenceUnitName+"-test",
+                    mySqlDialectClass,
+                    e.toString()
+            );
+        }
+    }
 }

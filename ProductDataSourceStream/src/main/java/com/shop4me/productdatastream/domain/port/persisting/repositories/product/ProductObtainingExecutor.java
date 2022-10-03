@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ProductObtainingExecutor {
 
-    @Transactional("productDbTransactionManager")
+    @Transactional("productDataStreamTransactionManager")
     List<ProductDto> execute(ProductObtainRequest request);
 }

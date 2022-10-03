@@ -1,7 +1,6 @@
-package com.shop4me.productdatastream.application.data;
+package com.shop4me.productdatastream.application.jpa;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.dialect.MariaDB103Dialect;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +19,7 @@ import static org.hibernate.cfg.AvailableSettings.*;
 @Slf4j
 
 @Configuration
-public class ProductDataStoreJpaContextConfig {
+public class ProductDataStreamJpaConfig {
 
     @Value("${spring.jpa.product-data-store.entities.package}")
     private String entitiesPackage;
@@ -40,9 +39,18 @@ public class ProductDataStoreJpaContextConfig {
     @Value("${spring.datasource.product-data-store.password}")
     private String password;
 
+    @Value("${spring.datasource.product-data-store.storage-engine}")
+    private String storageEngine;
+
+    @Value("${spring.datasource.product-data-store.dialect}")
+    private String mySqlDialect;
+
+    @Value("${spring.datasource.product-data-store.hbm2ddl}")
+    private String hbm2ddl;
+
     @Bean
-    public DataSource productDbDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    public DataSource productDataStreamDataSource() {
+        var dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(Objects.requireNonNull(driver));
         dataSource.setUrl(url);
         dataSource.setUsername(username);
@@ -52,13 +60,13 @@ public class ProductDataStoreJpaContextConfig {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean productDbEntitiesManager() {
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+    public LocalContainerEntityManagerFactoryBean productDataStreamEntitiesManager() {
+        var vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
-        LocalContainerEntityManagerFactoryBean em
-                = new LocalContainerEntityManagerFactoryBean();
+
+        var em = new LocalContainerEntityManagerFactoryBean();
         em.setPersistenceUnitName(persistenceUnitName);
-        em.setDataSource(productDbDataSource());
+        em.setDataSource(productDataStreamDataSource());
         em.setPackagesToScan(entitiesPackage);
         em.setJpaVendorAdapter(vendorAdapter);
         em.setJpaProperties(jpaProperties());
@@ -66,35 +74,43 @@ public class ProductDataStoreJpaContextConfig {
     }
 
     @Bean
-    public PlatformTransactionManager productDbTransactionManager() {
-        JpaTransactionManager transactionManager
-                = new JpaTransactionManager();
+    public PlatformTransactionManager productDataStreamTransactionManager() {
+        var transactionManager = new JpaTransactionManager();
+
         transactionManager.setEntityManagerFactory(
-                productDbEntitiesManager().getObject()
+                productDataStreamEntitiesManager().getObject()
         );
         return transactionManager;
     }
 
     private Properties jpaProperties(){
-        Properties jpaProperties = new Properties();
-        jpaProperties.put(DIALECT, MariaDB103Dialect.class.getName());
-        jpaProperties.put(STORAGE_ENGINE, "InnoDB");
-        jpaProperties.put(HBM2DDL_AUTO, "create");
+        var jpaProperties = new Properties();
+
+        jpaProperties.put(DIALECT, mySqlDialect);
+        jpaProperties.put(STORAGE_ENGINE, storageEngine);
+        jpaProperties.put(HBM2DDL_AUTO, hbm2ddl);
+
         return jpaProperties;
     }
 
     private void establishingConnectionLog(DataSource dataSource) {
         try {
-            String catalog = dataSource.getConnection().getCatalog();
-            log.info("Connection={driver='{}', catalog='{}', user='{}'}",
-                    driver,
+            var catalog = dataSource.getConnection().getCatalog();
+            log.debug("{}: MySql: [url: '{}', user: '{}', password: {} characters, catalog: '{}', storage engine: '{}']",
+                    persistenceUnitName,
+                    url,
+                    username,
+                    password.length(),
                     catalog,
-                    username
+                    storageEngine
             );
         } catch (java.sql.SQLException e) {
-            log.error("Connection failed={driver='{}', user='{}', reason='{}'}",
+            log.error("{}: MySql: [url: '{}', user: '{}', password: {} characters, storage engine: '{}'] ERROR: {}",
+                    persistenceUnitName,
                     driver,
                     username,
+                    password,
+                    storageEngine,
                     e.toString()
             );
         }

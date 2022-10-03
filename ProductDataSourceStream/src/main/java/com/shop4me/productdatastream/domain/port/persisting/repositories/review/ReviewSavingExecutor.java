@@ -9,6 +9,6 @@ import java.util.Map;
 public interface ReviewSavingExecutor {
 
     @Modifying
-    @Transactional("productDbTransactionManager")
+    @Transactional("productDataStreamTransactionManager")
     Map<String, String> execute(ReviewSaveRequest request);
 }

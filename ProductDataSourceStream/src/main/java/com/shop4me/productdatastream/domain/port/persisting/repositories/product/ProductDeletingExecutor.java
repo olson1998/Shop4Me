@@ -9,6 +9,6 @@ import java.util.Map;
 public interface ProductDeletingExecutor {
 
     @Modifying
-    @Transactional("productDbTransactionManager")
+    @Transactional("productDataStreamTransactionManager")
     Map<String, Integer> execute(ProductDeleteRequest request);
 }
