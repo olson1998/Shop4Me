@@ -40,7 +40,8 @@ class CategorySaveServiceTest {
             new Category(null, "\"all\"", "parrot")
     );
 
-    private final String checkIfAbsolutePathExistsJpql = "select case when count(c.name)=0 " +
+    private final String checkIfAbsolutePathExistsJpql =
+            "select case when count(c.name)=0 " +
             "then true else false end from CategoryEntity c " +
             "where concat(c.path, '.', '\"', c.name, '\"')= :absolutePath";
 
