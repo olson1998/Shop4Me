@@ -44,8 +44,8 @@ public class Shop4MeAuthenticationFilter extends UsernamePasswordAuthenticationF
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        org.springframework.security.core.userdetails.User user = (User) authResult.getPrincipal();
-        log.info("Successful authentication of user: '{}'", user.getUsername());
+        var user = (User) authResult.getPrincipal();
+        logInfoSuccessfulAuthentication(request, user);
 
         var algorithm = Algorithm.HMAC256(jwtSignature.getBytes());
         var accessToken = writeAccessToken(user, algorithm);
@@ -78,5 +78,20 @@ public class Shop4MeAuthenticationFilter extends UsernamePasswordAuthenticationF
                                 .toList()
                 )
                 .sign(algorithm);
+    }
+
+    private void logInfoSuccessfulAuthentication(HttpServletRequest httpServletRequest, User user){
+        var remoteAddress= httpServletRequest.getRemoteAddr();
+        var remotePort = httpServletRequest.getRemotePort();
+
+        var username = user.getUsername();
+        var authorities = user.getAuthorities();
+
+        log.info("Successful authentication of user: [{}], authorities: {}, url: [{}:{}]",
+                username,
+                authorities,
+                remoteAddress,
+                remotePort
+        );
     }
 }

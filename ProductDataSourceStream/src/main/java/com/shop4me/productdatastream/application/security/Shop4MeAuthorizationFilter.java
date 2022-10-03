@@ -2,7 +2,9 @@ package com.shop4me.productdatastream.application.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -16,9 +18,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -32,6 +34,8 @@ public class Shop4MeAuthorizationFilter extends OncePerRequestFilter {
 
     private final String jwtSignature;
 
+    private final ObjectMapper mapper;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     @NotNull HttpServletResponse response,
@@ -41,6 +45,7 @@ public class Shop4MeAuthorizationFilter extends OncePerRequestFilter {
         }
         else{
             var authHeader = request.getHeader(AUTHORIZATION);
+            var requestUrl = request.getRequestURL().toString();
 
             if(authHeader != null && authHeader.startsWith("Auth ")){
                 try{
@@ -48,29 +53,24 @@ public class Shop4MeAuthorizationFilter extends OncePerRequestFilter {
                     var algorithm = Algorithm.HMAC256(jwtSignature.getBytes());
                     var verifier = JWT.require(algorithm).build();
                     var decodedJWT = verifier.verify(token);
-                    var username = decodedJWT.getSubject();
-                    var roles = decodedJWT.getClaim("roles").asArray(String.class);
-                    var authorities = new ArrayList<SimpleGrantedAuthority>();
 
-                    Arrays.stream(roles).forEach(role ->
-                            authorities.add(new SimpleGrantedAuthority(role))
-                    );
+                    var username = decodedJWT.getSubject();
+                    var claim = decodedJWT.getClaim("roles");
+
                     var authToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    username,
-                                    null,
-                                    authorities
-                            );
+                            createUsernamePasswordAuthenticationToken(username, claim);
+
+                    logTraceAuthorization(requestUrl);
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                     filterChain.doFilter(request, response);
                 }catch (Exception e){
                     var errors = new HashMap<String, String>();
                     var error = e.toString();
+
                     errors.put("exception", error);
                     response.setStatus(FORBIDDEN.value());
-                    response.setHeader("error", e.getMessage());
                     response.setContentType(APPLICATION_JSON_VALUE);
-                    new ObjectMapper().writeValue(response.getOutputStream(), errors);
+                    mapper.writeValue(response.getOutputStream(), errors);
                     log.error("Error during auth: {}", error);
                 }
             }
@@ -78,5 +78,30 @@ public class Shop4MeAuthorizationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
             }
         }
+    }
+
+    private UsernamePasswordAuthenticationToken createUsernamePasswordAuthenticationToken(@NonNull String username, Claim claim){
+        var grantedAuthorities = claimSimpleGrantedAuthorities(claim);
+
+        return new UsernamePasswordAuthenticationToken(
+                username,
+                null,
+                grantedAuthorities
+        );
+    }
+
+    private List<SimpleGrantedAuthority> claimSimpleGrantedAuthorities(@NonNull Claim claim){
+        var authorities = claim.asArray(String.class);
+
+        return Arrays.stream(authorities)
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+    }
+
+    private void logTraceAuthorization(String requestUrl){
+        log.trace("Authorization for: [{}], authorization type: [{}]",
+                requestUrl,
+                UsernamePasswordAuthenticationToken.class.getSimpleName()
+        );
     }
 }

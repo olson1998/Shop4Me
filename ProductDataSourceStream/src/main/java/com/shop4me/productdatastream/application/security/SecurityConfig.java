@@ -1,5 +1,6 @@
 package com.shop4me.productdatastream.application.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop4me.productdatastream.domain.port.persisting.repositories.componentuser.ComponentUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,8 @@ public class SecurityConfig {
 
     private final ComponentUserRepository componentUserRepository;
 
+    private final ObjectMapper mapper;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -46,7 +49,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        var authorizationFilter = new Shop4MeAuthorizationFilter(jwtSignature);
+        var authorizationFilter = new Shop4MeAuthorizationFilter(jwtSignature, mapper);
 
         var authenticationFilter = new Shop4MeAuthenticationFilter(
                 authenticationProvider(),
