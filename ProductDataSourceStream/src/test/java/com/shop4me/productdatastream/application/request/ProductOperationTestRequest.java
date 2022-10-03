@@ -2,6 +2,7 @@ package com.shop4me.productdatastream.application.request;
 
 import com.shop4me.productdatastream.application.PayloadWriter;
 import com.shop4me.productdatastream.application.requesting.Shop4MeCoreRequest;
+import com.shop4me.productdatastream.domain.model.data.dto.Product;
 import com.shop4me.productdatastream.domain.port.persisting.dto.entity.ProductDto;
 import com.shop4me.productdatastream.domain.port.persisting.dto.entity.ProductSearchFilterDto;
 import com.shop4me.productdatastream.domain.port.requesting.CoreRequest;
@@ -14,7 +15,7 @@ public class ProductOperationTestRequest {
 
     public static final String PRODUCT = "PRODUCT";
 
-    public static CoreRequest productObtainRequest(long ... idArray){
+    public static CoreRequest productObtainCoreRequest(long ... idArray){
         return new Shop4MeCoreRequest(
                 PRODUCT,
                 OBTAIN,
@@ -22,7 +23,7 @@ public class ProductOperationTestRequest {
         );
     }
 
-    public static CoreRequest productSearchRequest(ProductSearchFilterDto[] productSearchFilterArray){
+    public static CoreRequest productSearchCoreRequest(ProductSearchFilterDto[] productSearchFilterArray){
         return new Shop4MeCoreRequest(
                 PRODUCT,
                 SEARCH,
@@ -30,7 +31,7 @@ public class ProductOperationTestRequest {
         );
     }
 
-    public static CoreRequest productEditRequest(Map<String, String> productPropertyEditedValueMap){
+    public static CoreRequest productEditCoreRequest(Map<String, String> productPropertyEditedValueMap){
         return new Shop4MeCoreRequest(
                 PRODUCT,
                 EDIT,
@@ -38,7 +39,15 @@ public class ProductOperationTestRequest {
         );
     }
 
-    public static CoreRequest productSaveRequest(Map<String, ProductDto> productSaveMap){
+    public static CoreRequest productDeleteCoreRequest(Product product){
+        return new Shop4MeCoreRequest(
+                PRODUCT,
+                DELETE,
+                PayloadWriter.write(product)
+        );
+    }
+
+    public static CoreRequest productSaveCoreRequest(Map<String, Product> productSaveMap){
         return new Shop4MeCoreRequest(
                 PRODUCT,
                 SAVE,
