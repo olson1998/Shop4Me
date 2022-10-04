@@ -18,8 +18,7 @@ public class ReviewService implements ReviewRepository {
     private final ProductDataStream productDataStream;
 
     @Override
-    public Mono<Map<String, String>> saveReviews(List<ReviewDto> reviews) {
-        var reviewSaveMap = createReviewSaveMap(reviews);
+    public Mono<Map<String, String>> saveReviews(Map<String, ReviewDto> reviewSaveMap) {
         return productDataStream.requestSavingReview(reviewSaveMap);
     }
 
@@ -31,12 +30,6 @@ public class ReviewService implements ReviewRepository {
     @Override
     public Mono<Map<String, Integer>> deleteReview(ReviewDto review) {
         return productDataStream.requestDeletingReview(review);
-    }
-
-    private Map<String, ReviewDto> createReviewSaveMap(@NonNull List<ReviewDto> reviews){
-        var reviewSaveMap = new ConcurrentHashMap<String, ReviewDto>();
-        reviews.forEach(reviewDto -> reviewSaveMap.put(UUID.randomUUID().toString(), reviewDto));
-        return reviewSaveMap;
     }
 
 }

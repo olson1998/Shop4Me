@@ -62,4 +62,14 @@ public class Review implements ReviewDto {
                 ", points=" + points +
                 '}';
     }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", productId=" + productId +
+                ", reviewerId=" + reviewerId +
+                ", reviewerName='" + reviewerName + '\'' +
+                '}';
+    }
 }

@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -19,17 +17,7 @@ public class CategoryService implements CategoryRepository {
     private final ProductDataStream productDataStream;
 
     @Override
-    public Mono<Map<String, String>> saveCategories(CategoryDto[] categories){
-        var categorySaveMap = createSaveCategoryMap(categories);
+    public Mono<Map<String, String>> saveCategories(Map<String, CategoryDto> categorySaveMap){
         return productDataStream.requestSavingCategory(categorySaveMap);
-    }
-
-    private Map<String, CategoryDto> createSaveCategoryMap(CategoryDto[] categories){
-        var saveMap = new HashMap<String, CategoryDto>();
-        Arrays.stream(categories).forEach(category ->{
-            var absolutePath = category.getAbsolutePath();
-            saveMap.put(absolutePath, category);
-        });
-        return saveMap;
     }
 }

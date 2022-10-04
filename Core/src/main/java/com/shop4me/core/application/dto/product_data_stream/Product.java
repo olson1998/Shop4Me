@@ -108,4 +108,12 @@ public class Product implements ProductDto {
         }
         else {return null;}
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
