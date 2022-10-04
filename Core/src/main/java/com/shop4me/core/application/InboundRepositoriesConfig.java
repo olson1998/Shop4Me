@@ -1,5 +1,6 @@
 package com.shop4me.core.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop4me.core.domain.port.requesting.AdminRequestRepository;
 import com.shop4me.core.domain.port.requesting.CustomerRequestRepository;
 import com.shop4me.core.domain.port.web.datastream.productdatastream.CategoryRepository;
@@ -22,9 +23,12 @@ public class InboundRepositoriesConfig {
 
     private final ReviewRepository reviewRepository;
 
+    private final ObjectMapper mapper;
+
     @Bean
     public AdminRequestRepository adminRequestRepository(){
         return new AdminRequestService(
+                mapper,
                 productRepository,
                 categoryRepository
         );

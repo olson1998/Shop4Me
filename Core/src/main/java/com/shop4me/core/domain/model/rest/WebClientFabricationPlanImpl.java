@@ -32,8 +32,14 @@ public class WebClientFabricationPlanImpl implements WebClientFabricationPlan {
                 "component=" + component +
                 ", url='" + url + '\'' +
                 ", username='" + username + '\'' +
-                ", password= *****" +
+                ", password= '" +getPasswordEcho()+ '\'' +
                 '}';
+    }
+
+    private String getPasswordEcho(){
+        var passwordEcho = new StringBuilder();
+        passwordEcho.append("*".repeat(password.length()));
+        return passwordEcho.toString();
     }
 
     private WebClient createBaseClient(){

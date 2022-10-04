@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface ReviewRepository {
 
-    Mono<Map<String, String>> saveReviews(List<ReviewDto> reviews);
+    Mono<Map<String, String>> saveReviews(Map<String, ReviewDto> reviews);
 
     Mono<Map<String, Integer>> editReview(Map<String, String> reviewEditMap);
 

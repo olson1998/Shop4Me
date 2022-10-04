@@ -35,4 +35,12 @@ public class ImageUrl implements ImageUrlDto {
     public boolean getVisibility() {
         return visibility;
     }
+
+    @Override
+    public String toString() {
+        return "ImageUrl{" +
+                "url='" + url + '\'' +
+                ", visibility=" + visibility +
+                '}';
+    }
 }

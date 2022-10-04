@@ -1,10 +1,1 @@
-rootProject.name = 'Shop4Me'
-
-dependencies {
-    implementation 'ProductDataSourceStream.src.main.com.shop4me.productdatastream'
-    implementation 'Core.src.main.com.shop4me.core'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
+rootProject.name = 'Core'
