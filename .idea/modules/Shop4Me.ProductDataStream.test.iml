@@ -4,14 +4,15 @@
     <facet type="web" name="Web">
       <configuration>
         <webroots />
-        <sourceRoots />
       </configuration>
     </facet>
     <facet type="jpa" name="JPA">
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="Shop4Me.ProductDataStream.test" />
+        </datasource-mapping>
         <naming-strategy-map />
       </configuration>
     </facet>
@@ -19,4 +20,9 @@
       <configuration />
     </facet>
   </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="TestModuleProperties" production-module="Shop4Me.ProductDataStream.main" />
 </module>

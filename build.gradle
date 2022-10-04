@@ -1,0 +1,15 @@
+subprojects{
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    sourceCompatibility = JavaVersion.VERSION_17
+
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.test{
+        useJUnitPlatform()
+    }
+}
