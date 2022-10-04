@@ -70,7 +70,7 @@ public class ProductEntity implements ProductDao {
                 id,
                 name,
                 description,
-                creatingTimestamp.toString(),
+                creatingTimestampString(creatingTimestamp),
                 reviewDtoSet(),
                 imageUrlDtoSet(),
                 categoryDtoSet()
@@ -78,21 +78,42 @@ public class ProductEntity implements ProductDao {
     }
 
     private Set<ReviewDto> reviewDtoSet(){
-        return reviewsSet.stream()
-                .map(ReviewEntity::toDto)
-                .collect(Collectors.toSet());
+        if(reviewsSet != null){
+            return reviewsSet.stream()
+                    .map(ReviewEntity::toDto)
+                    .collect(Collectors.toSet());
+        }else {
+            return null;
+        }
     }
 
     private Set<ImageUrlDto> imageUrlDtoSet(){
-        return imageUrlSet.stream()
-                .map(ImageUrlEntity::toDto)
-                .collect(Collectors.toSet());
+        if(imageUrlSet != null){
+            return imageUrlSet.stream()
+                    .map(ImageUrlEntity::toDto)
+                    .collect(Collectors.toSet());
+        }else {
+            return null;
+        }
     }
 
     private Set<CategoryDto> categoryDtoSet(){
-        return categoriesSet.stream()
-                .map(CategoryEntity::toDto)
-                .collect(Collectors.toSet());
+        if(categoriesSet != null){
+            return categoriesSet.stream()
+                    .map(CategoryEntity::toDto)
+                    .collect(Collectors.toSet());
+        }else {
+            return null;
+        }
+    }
+
+    private String creatingTimestampString(Timestamp timestamp){
+        if(timestamp != null){
+            timestamp.setNanos(0);
+            return timestamp.toString();
+        }else {
+            return null;
+        }
     }
 
     public ProductEntity(Long id, String name, String description) {
