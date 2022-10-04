@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.JpaContext;
 
 import java.util.Arrays;
 
-public interface ProductDataStreamEntitiesIntegrityTest {
+public interface ExampleEntitiesInsertInterface {
 
     JpaContext springData();
 
