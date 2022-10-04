@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.shop4me'
+group = 'com'
 version = '0.0.1-SNAPSHOT'
 
 
@@ -42,4 +42,6 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.register("prepareKotlinBuildScriptModel"){}
 

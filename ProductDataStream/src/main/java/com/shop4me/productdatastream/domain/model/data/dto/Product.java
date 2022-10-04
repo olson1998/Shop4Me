@@ -68,7 +68,6 @@ public class Product implements ProductDto {
                 '}';
     }
 
-    @VisibleForTesting
     public Product(String name) {
         this.name = name;
     }
