@@ -1,8 +1,8 @@
 package com.shop4me.productdatastream.application.persisting;
 
-import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.CategoryEntity;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.category.CategoryObtainExecutor;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.category.CategorySaveExecutor;
+import com.shop4me.productdatastream.domain.model.dao.productdatastorage.CategoryEntity;
+import com.shop4me.productdatastream.domain.port.persisting.category.CategoryObtainExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.category.CategorySaveExecutor;
 import com.shop4me.productdatastream.domain.service.persisting.category.CategoryObtainService;
 import com.shop4me.productdatastream.domain.service.persisting.category.CategorySaveService;
 import org.jetbrains.annotations.NotNull;
