@@ -1,9 +1,9 @@
 package com.shop4me.productdatastream.domain.service.persisting.product;
 
-import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.ProductEntity;
-import com.shop4me.productdatastream.domain.port.persisting.dto.entity.ProductDto;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.product.ProductObtainingExecutor;
+import com.shop4me.productdatastream.domain.model.dao.productdatastorage.ProductEntity;
+import com.shop4me.productdatastream.domain.port.persisting.product.ProductObtainingExecutor;
 import com.shop4me.productdatastream.domain.port.requesting.ProductObtainRequest;
+import com.shop4me.productdatastream.domain.port.objects.dto.ProductDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;

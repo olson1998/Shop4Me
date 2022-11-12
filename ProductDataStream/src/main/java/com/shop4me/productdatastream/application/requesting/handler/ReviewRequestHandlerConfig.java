@@ -1,8 +1,8 @@
 package com.shop4me.productdatastream.application.requesting.handler;
 
-import com.shop4me.productdatastream.domain.port.persisting.repositories.review.ReviewDeletingExecutor;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.review.ReviewEditingExecutor;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.review.ReviewSavingExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.review.ReviewDeletingExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.review.ReviewEditingExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.review.ReviewSavingExecutor;
 import com.shop4me.productdatastream.domain.port.requesting.handler.ReviewRequestHandler;
 import com.shop4me.productdatastream.domain.service.requesting.Shop4MeReviewRequestService;
 import lombok.RequiredArgsConstructor;

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import static com.shop4me.productdatastream.domain.model.request.toolset.RequestPayloadReader.OBJECT_MAPPER;
+import static com.shop4me.productdatastream.domain.model.request.utils.RequestPayloadReader.OBJECT_MAPPER;
 
 public class PayloadWriter {
 

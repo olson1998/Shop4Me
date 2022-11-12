@@ -1,14 +1,15 @@
 package com.shop4me.productdatastream.domain.model.request.review;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.shop4me.productdatastream.domain.model.data.dto.Review;
-import com.shop4me.productdatastream.domain.model.request.toolset.RequestPayloadReader;
+import com.shop4me.productdatastream.domain.model.request.utils.RequestPayloadReader;
+import com.shop4me.productdatastream.domain.model.dto.Review;
 import com.shop4me.productdatastream.domain.model.request.EmptyPayloadCheck;
-import com.shop4me.productdatastream.domain.port.persisting.dto.entity.ReviewDto;
-import com.shop4me.productdatastream.domain.port.requesting.CoreRequest;
+import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
+import com.shop4me.productdatastream.domain.port.objects.dto.ReviewDto;
 import com.shop4me.productdatastream.domain.port.requesting.ReviewSaveRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 
 import java.util.Comparator;
@@ -44,8 +45,8 @@ public class ReviewSaveRequestImpl implements ReviewSaveRequest {
     }
 
     @SneakyThrows
-    public static ReviewSaveRequestImpl fromCoreRequest(CoreRequest request){
-        var json = request.decodePayload().getPayload();
+    public static ReviewSaveRequestImpl fromInboundMessage(@NonNull InboundMsg inboundMsg){
+        var json = inboundMsg.getDecodedPayload();
 
         EmptyPayloadCheck.scan(json, "{}");
 

@@ -1,8 +1,8 @@
 package com.shop4me.productdatastream.domain.service.persisting.componentuser;
 
-import com.shop4me.productdatastream.domain.port.persisting.dto.entity.ComponentUser;
-import com.shop4me.productdatastream.domain.model.data.entities.componentssecuritycredentials.Shop4MeComponentUser;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.componentuser.ComponentUserRepository;
+import com.shop4me.productdatastream.domain.model.dao.componentssecuritycredentials.Shop4MeComponentUser;
+import com.shop4me.productdatastream.domain.port.persisting.componentuser.ComponentUserRepository;
+import com.shop4me.productdatastream.domain.port.objects.dto.ComponentUser;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.EntityManager;

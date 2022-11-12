@@ -1,16 +1,14 @@
 package com.shop4me.productdatastream.domain.service.requesting;
 
+import com.shop4me.productdatastream.domain.model.request.enumset.Operation;
+import com.shop4me.productdatastream.domain.port.requesting.handler.CategoryRequestHandler;
 import com.shop4me.productdatastream.domain.model.exception.OperationNotMatchingWithEntityException;
 import com.shop4me.productdatastream.domain.model.request.category.CategoryObtainRequestImpl;
 import com.shop4me.productdatastream.domain.model.request.category.CategorySaveRequestImpl;
-import com.shop4me.productdatastream.domain.model.request.enumset.Operation;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.category.CategoryObtainExecutor;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.category.CategorySaveExecutor;
-import com.shop4me.productdatastream.domain.port.requesting.handler.CategoryRequestHandler;
-import com.shop4me.productdatastream.domain.port.requesting.CoreRequest;
+import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
+import com.shop4me.productdatastream.domain.port.persisting.category.CategoryObtainExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.category.CategorySaveExecutor;
 import lombok.AllArgsConstructor;
-
-import java.util.concurrent.CompletableFuture;
 
 @AllArgsConstructor
 
@@ -21,23 +19,23 @@ public class Shop4MeCategoryRequestService implements CategoryRequestHandler {
     private final CategorySaveExecutor categorySaveService;
 
     @Override
-    public CompletableFuture<Object> handle(CoreRequest request){
-        return CompletableFuture.supplyAsync(()-> delegateRequest(request));
+    public Object handle(InboundMsg inboundMsg){
+        return delegateRequest(inboundMsg);
     }
 
-    private Object delegateRequest(CoreRequest  request){
-        switch (Operation.valueOf(request.getOperation())){
+    private Object delegateRequest(InboundMsg inboundMsg){
+        switch (Operation.valueOf(inboundMsg.getOperation())){
             case SAVE -> {
                 return categorySaveService.execute(
-                        CategorySaveRequestImpl.fromCoreRequest(request)
+                        CategorySaveRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
             case OBTAIN -> {
                 return categoryObtainService.execute(
-                        CategoryObtainRequestImpl.fromCoreRequest(request)
+                        CategoryObtainRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
         }
-        throw new OperationNotMatchingWithEntityException(request.getEntity(), request.getOperation());
+        throw new OperationNotMatchingWithEntityException("CATEGORY", inboundMsg.getOperation());
     }
 }

@@ -33,7 +33,7 @@ class Shop4MeProductDataStreamOnionArchitectureTest {
     @ArchTest
     public static final ArchRule SPRING_DATA_TRANSACTION_ANNOTATION_ONLY_IN_PORT_PERSISTING = ArchRuleDefinition.noMethods()
             .that().areDeclaredInClassesThat()
-            .resideOutsideOfPackage("com.shop4me.productdatastream.domain.port.persisting.repositories..")
+            .resideOutsideOfPackage("com.shop4me.productdatastream.domain.port.persisting..")
             .should().beAnnotatedWith(Transactional.class)
             .orShould().beAnnotatedWith(Modifying.class)
             .because("Interface in this packed are responsable for Spring data transaction");

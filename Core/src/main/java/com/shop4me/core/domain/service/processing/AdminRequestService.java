@@ -38,8 +38,8 @@ public class AdminRequestService implements AdminRequestRepository {
 
     @Override
     public CompletableFuture<RequestProcessingReport> saveProducts(ProductDto[] products){
-        log.info("ADMIN ip: {}, REQUESTED SAVING: {}", "?", products);
         var productSaveMap = createSavingProductMap(products);
+        log.info("REQUESTED SAVING: {}", productSaveMap);
         return productRepository.requestSavingProducts(productSaveMap)
                 .toFuture()
                 .thenApply(response -> SavingReportingService.productSavingReport(productSaveMap, response))
@@ -48,8 +48,8 @@ public class AdminRequestService implements AdminRequestRepository {
 
     @Override
     public CompletableFuture<RequestProcessingReport> saveCategories(CategoryDto[] categories){
-        log.info("ADMIN ip: {}, REQUESTED SAVING: {}", "?", categories);
         var categoriesSaveMap = createSaveCategoryMap(categories);
+        log.info("REQUESTED SAVING: {}", categoriesSaveMap);
         return categoryRepository.saveCategories(categoriesSaveMap)
                 .toFuture()
                 .thenApply(response -> SavingReportingService.categorySavingReport(categoriesSaveMap, response))
@@ -58,7 +58,7 @@ public class AdminRequestService implements AdminRequestRepository {
 
     @Override
     public CompletableFuture<RequestProcessingReport> deleteProduct(ProductDto product){
-        log.info("ADMIN ip: {}, REQUESTED DELETING: {}", "?", product);
+        log.info("REQUESTED DELETING: {}",  product);
         return productRepository.requestDeletingProduct(product)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
@@ -67,7 +67,7 @@ public class AdminRequestService implements AdminRequestRepository {
 
     @Override
     public CompletableFuture<RequestProcessingReport> editProduct(Map<String, String> productPropertyNewValueMap){
-        log.info("ADMIN ip: {}, REQUESTED EDITING: {}", "?", productPropertyNewValueMap);
+        log.info("REQUESTED EDITING: {}", productPropertyNewValueMap);
         return productRepository.requestEditingProduct(productPropertyNewValueMap)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
@@ -76,6 +76,7 @@ public class AdminRequestService implements AdminRequestRepository {
 
     @Override
     public CompletableFuture<RequestProcessingReport> editProductsCategories(String productId, Long[] categoriesIds) {
+        log.info("REQUESTED EDITING PRODUCT: '{}' NEW CATEGORIES: {}", productId, categoriesIds);
         var productsCategoriesEditMap = createProductsCategoryEditMap(productId, categoriesIds);
         return productRepository.requestEditingProduct(productsCategoriesEditMap)
                 .toFuture()
@@ -85,6 +86,7 @@ public class AdminRequestService implements AdminRequestRepository {
 
     @Override
     public CompletableFuture<RequestProcessingReport> editProductsImageUrls(String productId, String[] imageUrlsIds) {
+        log.info("REQUESTED EDITING PRODUCT: '{}' NEW IMAGE URLS: {}", productId, imageUrlsIds);
         var productsImageUrlsEditMap = createProductsImageUrlsEditMap(productId, imageUrlsIds);
         return productRepository.requestEditingProduct(productsImageUrlsEditMap)
                 .toFuture()
@@ -111,7 +113,7 @@ public class AdminRequestService implements AdminRequestRepository {
         );
     }
 
-    private Map<String, CategoryDto> createSaveCategoryMap(CategoryDto[] categories){
+    private Map<String, CategoryDto> createSaveCategoryMap(@NonNull CategoryDto[] categories){
         var saveMap = new HashMap<String, CategoryDto>();
         Arrays.stream(categories).forEach(category ->{
             var absolutePath = category.getAbsolutePath();

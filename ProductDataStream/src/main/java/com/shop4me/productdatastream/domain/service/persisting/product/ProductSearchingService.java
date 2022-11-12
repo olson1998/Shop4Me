@@ -1,6 +1,6 @@
 package com.shop4me.productdatastream.domain.service.persisting.product;
 
-import com.shop4me.productdatastream.domain.port.persisting.repositories.product.ProductSearchingExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.product.ProductSearchingExecutor;
 import com.shop4me.productdatastream.domain.port.requesting.ProductSearchRequest;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;

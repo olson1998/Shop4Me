@@ -1,8 +1,8 @@
 package com.shop4me.productdatastream.application.persisting;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.ProductEntity;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.product.*;
+import com.shop4me.productdatastream.domain.model.dao.productdatastorage.ProductEntity;
+import com.shop4me.productdatastream.domain.port.persisting.product.*;
 import com.shop4me.productdatastream.domain.service.persisting.product.*;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;

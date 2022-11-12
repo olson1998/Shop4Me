@@ -1,0 +1,23 @@
+docker run -p 2181:2181 -e ALLOW_ANONYMOUS_LOGIN=yes  -e ALLOW_PLAINTEXT_LISTENER=yes -e KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true --network apache-kafka-net --name zookeeper-server bitnami/zookeeper:latest
+
+docker run -p 9092:9092 -e ALLOW_PLAINTEXT_LISTENER=yes -e KAFKA_ZOOKEEPER_CONNECT=zookeeper-server:2181 -e ALLOW_PLAINTEXT_LISTENER=yes -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092 -e KAFKA_BROKER_ID=1 -e KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092 --network apache-kafka-net --name kafka-server bitnami/kafka:latest
+
+
+
+kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic IMAGEURLOUT
+
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic PRODUCTOUT
+
+kafka-console-producer.sh -broker-list localhost:9092 -topic PRODUCT
+kafka-console-producer.sh -broker-list localhost:9092 -topic CATEGORY
+kafka-console-producer.sh -broker-list localhost:9092 -topic PERSON
+kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic CATEGORY
+
+//category
+{"id":"TEST-2","tenant":1,"operation":"SAVE","payload":"eyJ0ZXN0LTEiOnsibmFtZSI6ImNhdCJ9LCJ0ZXN0LTIiOnsibmFtZSI6ImRvZyJ9LCJ0ZXN0LTEiOnsibmFtZSI6ImZpc2gifX0="}
+
+//product
+{"id":"TEST-1","tenant":1,"operation":"SAVE","payload":"eyJ0ZXN0LTEiOnsibmFtZSI6IkNhdCB0aGUga2l0dGVuIn0sInRlc3QtMiI6eyJuYW1lIjoiRG9nIHRoZSBQdXBweSJ9LCJ0ZXN0LTMiOnsibmFtZSI6IkhhbXN0ZXIgdGhlIHRvb3RoYnJha2VyIn19"}
+{"id":"TEST-1","tenant":1,"operation":"EDIT","payload":"eyJJRCI6IjEiLCJDQVRFR09SWSI6Ilt7XCJvcGVyYXRpb25cIjpcIkFERFwiLFwidmFsdWVcIjpcIlsxXVwifV0iLCJOQU1FIjoiR29sZCBmaXNoIDI0ayJ9"}
+{"id":"test-obtain","tenant":1,"operation":"OBTAIN","payload":"WzEsMiwzLDQsNSw2LDgsOV0="}
+{"id":"test-search","tenant":1,"operation":"SEARCH","payload":"W3sicHJvcGVydHkiOiJOQU1FIiwib3BlcmF0b3IiOiJMSUtFIiwidmFsdWUiOiJEb2cifSx7InByb3BlcnR5IjoiQ0FURUdPUlkiLCJvcGVyYXRvciI6IkxJS0UiLCJ2YWx1ZSI6IlwiYWxsXCIuXCJmaXNoXCIifV0="}

@@ -1,6 +1,6 @@
 package com.shop4me.productdatastream.domain.service.persisting.product;
 
-import com.shop4me.productdatastream.domain.port.persisting.repositories.product.ProductDeletingExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.product.ProductDeletingExecutor;
 import com.shop4me.productdatastream.domain.port.requesting.ProductDeleteRequest;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;

@@ -1,6 +1,6 @@
 package com.shop4me.productdatastream.domain.model.request.review.tools;
 
-import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.properties.review.ReviewProperty;
+import com.shop4me.productdatastream.domain.model.dao.productdatastorage.properties.ReviewProperty;
 import lombok.NonNull;
 
 import java.util.Comparator;

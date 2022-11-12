@@ -1,27 +1,27 @@
 package com.shop4me.productdatastream.domain.model.request.category;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.shop4me.productdatastream.domain.model.data.dto.Category;
+import com.shop4me.productdatastream.domain.model.dto.Category;
 import com.shop4me.productdatastream.domain.model.request.EmptyPayloadCheck;
-import com.shop4me.productdatastream.domain.model.request.toolset.RequestPayloadReader;
-import com.shop4me.productdatastream.domain.port.persisting.dto.entity.CategoryDto;
+import com.shop4me.productdatastream.domain.model.request.utils.RequestPayloadReader;
+import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
+import com.shop4me.productdatastream.domain.port.objects.dto.CategoryDto;
 import com.shop4me.productdatastream.domain.port.requesting.CategorySaveRequest;
-import com.shop4me.productdatastream.domain.port.requesting.CoreRequest;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.SneakyThrows;
+import lombok.*;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
+@Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 
 public class CategorySaveRequestImpl implements CategorySaveRequest {
 
-    @Getter
-    private Map<String, CategoryDto> categoriesToSaveMap;
+    private final Map<String, CategoryDto> categoriesToSaveMap;
+
+    private final int tenantId;
 
     @Override
     public String toString() {
@@ -65,24 +65,25 @@ public class CategorySaveRequestImpl implements CategorySaveRequest {
     }
 
     @SneakyThrows
-    public static CategorySaveRequestImpl fromCoreRequest(CoreRequest request){
-        var payload = request.decodePayload().getPayload();
+    public static CategorySaveRequestImpl fromInboundMessage(@NonNull InboundMsg inboundMsg){
+        var payload = inboundMsg.getDecodedPayload();
         EmptyPayloadCheck.scan(payload, "{}");
 
         var categoriesMap = RequestPayloadReader.OBJECT_MAPPER.readValue(
                 payload, new TypeReference<Map<String, Category>>() {}
         );
 
-        var categoriesDtoMap = writeCategoryDtoSaveMap(categoriesMap);
+        var categoriesDtoMap = writeCategoryDtoSaveMap(categoriesMap, inboundMsg.getTenantId());
 
-        return new CategorySaveRequestImpl(categoriesDtoMap);
+        return new CategorySaveRequestImpl(categoriesDtoMap, inboundMsg.getTenantId());
     }
 
-    private static Map<String, CategoryDto> writeCategoryDtoSaveMap(Map<String, Category> categoryMap){
+    private static Map<String, CategoryDto> writeCategoryDtoSaveMap(Map<String, Category> categoryMap, int tenantId){
         var categoryDtoMap = new HashMap<String, CategoryDto>();
 
         categoryMap.keySet().forEach(correlationId -> {
             var category = categoryMap.get(correlationId);
+            category.setTenantId(tenantId);
 
             if(category.getName() == null){category.setDefaultName();}
             if(category.getPath() == null){category.setDefaultPath();}
