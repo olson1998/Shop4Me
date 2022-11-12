@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-
 public class Shop4MeComponentUserService implements ComponentUserRepository {
 
     private final EntityManager componentUserEntityManager;

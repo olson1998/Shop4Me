@@ -1,18 +1,18 @@
 package com.shop4me.productdatastream.domain.service.requesting;
 
+import com.shop4me.productdatastream.domain.model.exception.OperationNotMatchingWithEntityException;
 import com.shop4me.productdatastream.domain.model.request.enumset.Operation;
 import com.shop4me.productdatastream.domain.model.request.review.ReviewDeleteRequestImpl;
 import com.shop4me.productdatastream.domain.model.request.review.ReviewEditRequestImpl;
 import com.shop4me.productdatastream.domain.model.request.review.ReviewSaveRequestImpl;
-import com.shop4me.productdatastream.domain.port.requesting.handler.ReviewRequestHandler;
-import com.shop4me.productdatastream.domain.model.exception.OperationNotMatchingWithEntityException;
 import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
 import com.shop4me.productdatastream.domain.port.persisting.review.ReviewDeletingExecutor;
 import com.shop4me.productdatastream.domain.port.persisting.review.ReviewEditingExecutor;
 import com.shop4me.productdatastream.domain.port.persisting.review.ReviewSavingExecutor;
-import lombok.AllArgsConstructor;
+import com.shop4me.productdatastream.domain.port.requesting.handler.ReviewRequestHandler;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 
 public class Shop4MeReviewRequestService implements ReviewRequestHandler {
 

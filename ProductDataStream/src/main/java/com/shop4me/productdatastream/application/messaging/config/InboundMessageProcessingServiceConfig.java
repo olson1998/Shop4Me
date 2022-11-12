@@ -23,9 +23,9 @@ public class InboundMessageProcessingServiceConfig {
     @Bean
     public InboundMessageProcessor inboundMessageProcessor(){
         return new InboundMessageProcessingService(
+                objectMapper,
                 requestHandler,
-                outboundMessageProducer,
-                objectMapper
+                outboundMessageProducer
         );
     }
 }

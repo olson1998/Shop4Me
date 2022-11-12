@@ -14,19 +14,20 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Review implements ReviewDto {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty(value = "product_id", required = true)
+    @JsonProperty(value = "product_id", access = JsonProperty.Access.READ_ONLY, required = true)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private long productId;
 
     @JsonProperty(value = "reviewer_id", required = true)
     private long reviewerId;
 
     @JsonProperty("reviewer_name")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String reviewerName;
 
     @JsonProperty(value = "points", required = true)

@@ -14,7 +14,7 @@ import java.util.Base64;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class InboundMessage implements InboundMsg {
+public class  InboundMessage implements InboundMsg {
 
     @JsonProperty(value = "id", required = true)
     private String messageId;

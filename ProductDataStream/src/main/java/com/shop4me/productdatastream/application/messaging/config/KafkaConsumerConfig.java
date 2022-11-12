@@ -11,13 +11,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.Map;
 
 import static java.util.Map.entry;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
 
 @Configuration
 @RequiredArgsConstructor
@@ -27,14 +27,13 @@ public class KafkaConsumerConfig {
     private String kafkaBootstrapAddress;
 
     private final StringDeserializer stringDeserializer = new StringDeserializer();
-
     @Bean
     public ConsumerFactory<String, InboundMessage> inboundMessageConsumerFactory(){
         var consumerProps = consumerProps();
         return new DefaultKafkaConsumerFactory<>(
                 consumerProps,
                 stringDeserializer,
-                new JsonDeserializer<>(InboundMessage.class)
+                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(InboundMessage.class))
         );
     }
 

@@ -5,19 +5,20 @@ import com.shop4me.productdatastream.domain.port.requesting.handler.InboundMessa
 import com.shop4me.productdatastream.domain.port.requesting.handler.RequestHandler;
 import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
 import com.shop4me.productdatastream.domain.port.messaging.OutboundMessageProducer;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 
+@RequiredArgsConstructor
 public class InboundMessageProcessingService implements InboundMessageProcessor {
 
+    private final ObjectMapper objectMapper;
     private final RequestHandler requestHandler;
 
     private final OutboundMessageProducer outboundMessageProducer;
-
-    private final ObjectMapper objectMapper;
 
     @Override
     public void process(InboundMsg inboundMsg) {
@@ -26,7 +27,6 @@ public class InboundMessageProcessingService implements InboundMessageProcessor 
                 .exceptionally(error-> produceOutboundErrorMessage(inboundMsg, error));
     }
 
-    @SneakyThrows
     private void produceOutboundOkMessage(InboundMsg inboundMsg, Object object){
         var payload = writePayload(object);
         outboundMessageProducer.produce(inboundMsg, "OK", payload);
@@ -48,13 +48,5 @@ public class InboundMessageProcessingService implements InboundMessageProcessor 
         }else {
             return null;
         }
-    }
-
-    public InboundMessageProcessingService(RequestHandler requestHandler,
-                                           OutboundMessageProducer outboundMessageProducer,
-                                           ObjectMapper objectMapper) {
-        this.requestHandler = requestHandler;
-        this.outboundMessageProducer = outboundMessageProducer;
-        this.objectMapper = objectMapper;
     }
 }

@@ -10,11 +10,13 @@ kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --t
 
 kafka-console-producer.sh -broker-list localhost:9092 -topic PRODUCT
 kafka-console-producer.sh -broker-list localhost:9092 -topic CATEGORY
-kafka-console-producer.sh -broker-list localhost:9092 -topic PERSON
-kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic CATEGORY
+kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic PRODUCT
 
 //category
 {"id":"TEST-2","tenant":1,"operation":"SAVE","payload":"eyJ0ZXN0LTEiOnsibmFtZSI6ImNhdCJ9LCJ0ZXN0LTIiOnsibmFtZSI6ImRvZyJ9LCJ0ZXN0LTEiOnsibmFtZSI6ImZpc2gifX0="}
+
+//REVIEW
+{"id":"review-test-5","tenant":1,"operation":"SAVE","payload":"eyJ0ZXN0LXNhdmUtcmV2aWV3LTEiOnsicHJvZHVjdF9pZCI6MSwicmV2aWV3ZXJfaWQiOjEzNDQxLCJyZXZpZXdlcl9uYW1lIjoiVGVzdGVyIiwicG9pbnRzIjo3LCJ0ZXh0IjoiQmVzdCBwcm9kdWN0IGluIG15IGxpZmUsIGV2ZXJ5IHNob3VsZCBnZXQgYXQgbGVhc3Qgb25lIG9mIHRoaXMgYW1hemluZyBwcm9kdWN0ISJ9LCJ0ZXN0LXNhdmUtcmV2aWV3LTIiOnsicHJvZHVjdF9pZCI6NCwicmV2aWV3ZXJfaWQiOjEzNDQxLCJyZXZpZXdlcl9uYW1lIjoiSGF0ZXIiLCJwb2ludHMiOjEsInRleHQiOiJTaGl0IHRyYXNoIHByb2R1Y3QsIHdhc3RlIG9mIG1vbmV5ISEhISJ9fQ=="}
 
 //product
 {"id":"TEST-1","tenant":1,"operation":"SAVE","payload":"eyJ0ZXN0LTEiOnsibmFtZSI6IkNhdCB0aGUga2l0dGVuIn0sInRlc3QtMiI6eyJuYW1lIjoiRG9nIHRoZSBQdXBweSJ9LCJ0ZXN0LTMiOnsibmFtZSI6IkhhbXN0ZXIgdGhlIHRvb3RoYnJha2VyIn19"}

@@ -24,6 +24,7 @@ class Shop4MeProductDataStreamOnionArchitectureTest {
     public static final ArchRule ONION_ARCHITECTURE_TEST = Architectures.onionArchitecture()
             .withOptionalLayers(true)
             .adapter("inbound", "com.shop4me.productdatastream.adapter.inbound..")
+            .adapter("outbound", "com.shop4me.productdatastream.adapter.outbound..")
             .applicationServices("com.shop4me.productdatastream.application..")
             .domainServices("com.shop4me.productdatastream.domain.port..")
             .domainServices("com.shop4me.productdatastream.domain.service..")

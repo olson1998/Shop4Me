@@ -8,7 +8,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
-import static org.springframework.kafka.support.KafkaHeaders.RECEIVED_TOPIC;
+import static org.springframework.kafka.support.KafkaHeaders.*;
 
 @Service
 

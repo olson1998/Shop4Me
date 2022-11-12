@@ -20,14 +20,9 @@ public class ProductSearchingService implements ProductSearchingExecutor {
     public List<Long> execute(@NonNull ProductSearchRequest request){
         log.info(request.toString());
         var jpql = request.writeJpqlQuery();
-        return executeJpqlQuery(jpql);
-    }
-
-    private List<Long> executeJpqlQuery(String jpql){
         return productEntityManager
                 .createQuery(jpql, Long.class)
                 .getResultList();
     }
-
 
 }

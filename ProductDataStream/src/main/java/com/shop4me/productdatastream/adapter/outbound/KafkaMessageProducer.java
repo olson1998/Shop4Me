@@ -4,9 +4,9 @@ import com.shop4me.productdatastream.application.messaging.OutboundMessage;
 import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
 import com.shop4me.productdatastream.domain.port.messaging.OutboundMessageProducer;
 import com.shop4me.productdatastream.domain.port.requesting.utils.OutboundTopicResolver;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class KafkaMessageProducer implements OutboundMessageProducer {
     private final OutboundTopicResolver outboundTopicResolver;
 
     @Override
-    public void produce(InboundMsg inboundMsg, String status, String header, String payload) {
+    public void produce(@NonNull InboundMsg inboundMsg, String status, String header, String payload) {
         var topic = outboundTopicResolver.resolve(inboundMsg.getTopic());
         var outboundMsg = new OutboundMessage(topic, inboundMsg.getMessageId(), status, header, payload);
         try(var producer = producerFactory.createProducer()){

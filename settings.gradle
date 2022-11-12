@@ -2,4 +2,3 @@ rootProject.name = 'Shop4Me'
 
 include 'Core'
 include 'ProductDataStream'
-include 'auctiondatastream'
