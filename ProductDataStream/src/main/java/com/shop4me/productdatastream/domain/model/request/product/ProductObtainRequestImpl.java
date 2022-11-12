@@ -1,26 +1,26 @@
 package com.shop4me.productdatastream.domain.model.request.product;
 
-import com.shop4me.productdatastream.domain.model.request.toolset.RequestPayloadReader;
+import com.shop4me.productdatastream.domain.model.request.utils.RequestPayloadReader;
 import com.shop4me.productdatastream.domain.model.request.EmptyPayloadCheck;
-import com.shop4me.productdatastream.domain.port.requesting.CoreRequest;
+import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
 import com.shop4me.productdatastream.domain.port.requesting.ProductObtainRequest;
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.SneakyThrows;
+import lombok.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductObtainRequestImpl implements ProductObtainRequest {
 
-    private long[] requestedIds;
+    private final long[] requestedIds;
+
+    private final int tenantId;
 
     @Override
     public String writeJpqlQuery() {
         StringBuilder query = new StringBuilder("select p from ProductEntity p ");
         if (requestedIds.length > 0) {
-            query.append("where ");
+            query.append("where (");
             int size = requestedIds.length;
             var idList = arrayToList(requestedIds);
             var iterator = idList.listIterator();
@@ -30,10 +30,11 @@ public class ProductObtainRequestImpl implements ProductObtainRequest {
                     query.append("or ");
                 }
             }
+            query.append(") ");
         }
+        query.append("and p.tenantId=").append(tenantId);
         return query.toString();
     }
-
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder("OBTAIN PRODUCT WITH ID:(");
@@ -55,14 +56,14 @@ public class ProductObtainRequestImpl implements ProductObtainRequest {
     }
 
     @SneakyThrows
-    public static ProductObtainRequestImpl fromCoreRequest(@NonNull CoreRequest request){
-        var json = request.decodePayload().getPayload();
+    public static ProductObtainRequestImpl fromInboundMessage(@NonNull InboundMsg inboundMsg){
+        var json = inboundMsg.getDecodedPayload();
 
         EmptyPayloadCheck.scan(json, "[]");
 
         var requested = RequestPayloadReader.OBJECT_MAPPER.readValue(json, long[].class);
 
-        return new ProductObtainRequestImpl(requested);
+        return new ProductObtainRequestImpl(requested, inboundMsg.getTenantId());
     }
 
 }

@@ -5,16 +5,14 @@ import com.shop4me.productdatastream.domain.model.request.enumset.Operation;
 import com.shop4me.productdatastream.domain.model.request.review.ReviewDeleteRequestImpl;
 import com.shop4me.productdatastream.domain.model.request.review.ReviewEditRequestImpl;
 import com.shop4me.productdatastream.domain.model.request.review.ReviewSaveRequestImpl;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.review.ReviewDeletingExecutor;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.review.ReviewEditingExecutor;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.review.ReviewSavingExecutor;
-import com.shop4me.productdatastream.domain.port.requesting.CoreRequest;
+import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
+import com.shop4me.productdatastream.domain.port.persisting.review.ReviewDeletingExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.review.ReviewEditingExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.review.ReviewSavingExecutor;
 import com.shop4me.productdatastream.domain.port.requesting.handler.ReviewRequestHandler;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-import java.util.concurrent.CompletableFuture;
-
-@AllArgsConstructor
+@RequiredArgsConstructor
 
 public class Shop4MeReviewRequestService implements ReviewRequestHandler {
 
@@ -25,28 +23,28 @@ public class Shop4MeReviewRequestService implements ReviewRequestHandler {
     private final ReviewDeletingExecutor reviewDeletingService;
 
     @Override
-    public CompletableFuture<Object> handle(CoreRequest request){
-        return CompletableFuture.supplyAsync(()-> delegateRequest(request));
+    public Object handle(InboundMsg inboundMsg){
+        return delegateRequest(inboundMsg);
     }
 
-    private Object delegateRequest(CoreRequest  request){
-        switch (Operation.valueOf(request.getOperation())){
+    private Object delegateRequest(InboundMsg inboundMsg){
+        switch (Operation.valueOf(inboundMsg.getOperation())){
             case SAVE -> {
                 return reviewSavingService.execute(
-                        ReviewSaveRequestImpl.fromCoreRequest(request)
+                        ReviewSaveRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
             case EDIT -> {
                 return reviewEditingService.execute(
-                        ReviewEditRequestImpl.fromCoreRequest(request)
+                        ReviewEditRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
             case DELETE ->{
                 return reviewDeletingService.execute(
-                        ReviewDeleteRequestImpl.fromCoreRequest(request)
+                        ReviewDeleteRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
         }
-        throw new OperationNotMatchingWithEntityException(request.getEntity(), request.getOperation());
+        throw new OperationNotMatchingWithEntityException("REVIEW", inboundMsg.getOperation());
     }
 }

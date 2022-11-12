@@ -1,13 +1,13 @@
 package com.shop4me.productdatastream.application.persisting;
 
-import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.ReviewEntity;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.review.ReviewDeletingExecutor;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.review.ReviewEditingExecutor;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.review.ReviewSavingExecutor;
+import com.shop4me.productdatastream.domain.model.dao.productdatastorage.ReviewEntity;
+import com.shop4me.productdatastream.domain.port.persisting.review.ReviewDeletingExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.review.ReviewEditingExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.review.ReviewSavingExecutor;
 import com.shop4me.productdatastream.domain.service.persisting.review.ReviewDeletingService;
 import com.shop4me.productdatastream.domain.service.persisting.review.ReviewEditingService;
 import com.shop4me.productdatastream.domain.service.persisting.review.ReviewSavingService;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.JpaContext;
@@ -34,7 +34,7 @@ public class ReviewRequestExecutorConfig {
         return new ReviewDeletingService(entityManager);
     }
 
-    public ReviewRequestExecutorConfig(@NotNull JpaContext jpaContext) {
+    public ReviewRequestExecutorConfig(@NonNull JpaContext jpaContext) {
         this.entityManager = jpaContext.getEntityManagerByManagedType(ReviewEntity.class);
     }
 }

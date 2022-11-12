@@ -1,6 +1,6 @@
 package com.shop4me.productdatastream.domain.port.requesting;
 
-import com.shop4me.productdatastream.domain.port.persisting.dto.entity.ReviewDto;
+import com.shop4me.productdatastream.domain.port.objects.dto.ReviewDto;
 
 import java.util.Map;
 

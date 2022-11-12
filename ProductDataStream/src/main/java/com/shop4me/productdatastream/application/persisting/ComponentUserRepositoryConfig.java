@@ -1,7 +1,7 @@
 package com.shop4me.productdatastream.application.persisting;
 
-import com.shop4me.productdatastream.domain.model.data.entities.componentssecuritycredentials.Shop4MeComponentUser;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.componentuser.ComponentUserRepository;
+import com.shop4me.productdatastream.domain.model.dao.componentssecuritycredentials.Shop4MeComponentUser;
+import com.shop4me.productdatastream.domain.port.persisting.componentuser.ComponentUserRepository;
 import com.shop4me.productdatastream.domain.service.persisting.componentuser.Shop4MeComponentUserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;

@@ -24,6 +24,7 @@ class Shop4MeProductDataStreamOnionArchitectureTest {
     public static final ArchRule ONION_ARCHITECTURE_TEST = Architectures.onionArchitecture()
             .withOptionalLayers(true)
             .adapter("inbound", "com.shop4me.productdatastream.adapter.inbound..")
+            .adapter("outbound", "com.shop4me.productdatastream.adapter.outbound..")
             .applicationServices("com.shop4me.productdatastream.application..")
             .domainServices("com.shop4me.productdatastream.domain.port..")
             .domainServices("com.shop4me.productdatastream.domain.service..")
@@ -33,7 +34,7 @@ class Shop4MeProductDataStreamOnionArchitectureTest {
     @ArchTest
     public static final ArchRule SPRING_DATA_TRANSACTION_ANNOTATION_ONLY_IN_PORT_PERSISTING = ArchRuleDefinition.noMethods()
             .that().areDeclaredInClassesThat()
-            .resideOutsideOfPackage("com.shop4me.productdatastream.domain.port.persisting.repositories..")
+            .resideOutsideOfPackage("com.shop4me.productdatastream.domain.port.persisting..")
             .should().beAnnotatedWith(Transactional.class)
             .orShould().beAnnotatedWith(Modifying.class)
             .because("Interface in this packed are responsable for Spring data transaction");

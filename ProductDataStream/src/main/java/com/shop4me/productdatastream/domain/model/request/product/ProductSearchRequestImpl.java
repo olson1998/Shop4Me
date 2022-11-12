@@ -1,28 +1,28 @@
 package com.shop4me.productdatastream.domain.model.request.product;
 
-import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.properties.product.ProductProperty;
-import com.shop4me.productdatastream.domain.model.exception.EmptyValueException;
-import com.shop4me.productdatastream.domain.model.request.EmptyPayloadCheck;
 import com.shop4me.productdatastream.domain.model.request.enumset.Operator;
-import com.shop4me.productdatastream.domain.model.request.product.tools.ProductSearchFilter;
-import com.shop4me.productdatastream.domain.model.request.product.tools.ProductSearchFilterComparator;
-import com.shop4me.productdatastream.domain.model.request.toolset.RequestPayloadReader;
-import com.shop4me.productdatastream.domain.port.persisting.dto.entity.ProductSearchFilterDto;
-import com.shop4me.productdatastream.domain.port.requesting.CoreRequest;
+import com.shop4me.productdatastream.domain.model.request.product.utils.ProductSearchFilter;
+import com.shop4me.productdatastream.domain.model.request.utils.RequestPayloadReader;
+import com.shop4me.productdatastream.domain.model.exception.EmptyValueException;
+import com.shop4me.productdatastream.domain.model.dao.productdatastorage.properties.ProductProperty;
+import com.shop4me.productdatastream.domain.model.request.EmptyPayloadCheck;
+import com.shop4me.productdatastream.domain.model.request.product.utils.ProductSearchFilterComparator;
+import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
+import com.shop4me.productdatastream.domain.port.objects.dto.ProductSearchFilterDto;
 import com.shop4me.productdatastream.domain.port.requesting.ProductSearchRequest;
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.SneakyThrows;
+import lombok.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.properties.product.ProductProperty.CATEGORY;
+import static com.shop4me.productdatastream.domain.model.dao.productdatastorage.properties.ProductProperty.CATEGORY;
 
-@AllArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductSearchRequestImpl implements ProductSearchRequest {
 
-    private ProductSearchFilter[] filters;
+    private final ProductSearchFilter[] filters;
+
+    private final int tenantId;
 
     @Override
     public String writeJpqlQuery(){
@@ -32,6 +32,7 @@ public class ProductSearchRequestImpl implements ProductSearchRequest {
         var combinationsList = writeCombinationsList(samePropAndOperatorSet);
         leftOuterJoinIfCategoryFilterPresent(query);
         writeJpqlWhereClauses(query, combinationsList);
+        query.append("and p.tenantId=").append(tenantId);
         return query.toString();
     }
 
@@ -49,11 +50,13 @@ public class ProductSearchRequestImpl implements ProductSearchRequest {
 
     private void writeJpqlWhereClauses(StringBuilder query, @NonNull List<ProductSearchFilter> combinations){
         var combinationsQty = combinations.size();
-        for(int i =0; i < combinationsQty; i++){
-            var combination = combinations.get(i);
-            writeJpqlWhere(query, combination);
-            if(i < combinationsQty-1){
-                query.append("and ");
+        if(combinations.size()>0){
+            for(int i =0; i < combinationsQty; i++){
+                var combination = combinations.get(i);
+                writeJpqlWhere(query, combination);
+                if(i < combinationsQty-1){
+                    query.append("and ");
+                }
             }
         }
     }
@@ -80,7 +83,7 @@ public class ProductSearchRequestImpl implements ProductSearchRequest {
                 .collect(Collectors.toList());
     }
 
-    private void writeCombinationsListString(StringBuilder str, List<ProductSearchFilter> combinationsList){
+    private void writeCombinationsListString(StringBuilder str, @NonNull List<ProductSearchFilter> combinationsList){
         var combinationsQty = combinationsList.size();
         for(int i =0 ; i < combinationsQty; i++){
             var combination = combinationsList.get(i);
@@ -107,7 +110,7 @@ public class ProductSearchRequestImpl implements ProductSearchRequest {
         return samePropAndOperatorSet;
     }
 
-    private void writeCombinationWithValue(StringBuilder str, ProductSearchFilter combination){
+    private void writeCombinationWithValue(StringBuilder str, @NonNull ProductSearchFilter combination){
         var values = collectValuesOfFiltersWithSameCombination(combination);
         str.append(combination.getProperty()).append(" ").append(combination.getOperator()).append(": ");
         var size = values.size();
@@ -154,8 +157,8 @@ public class ProductSearchRequestImpl implements ProductSearchRequest {
 
 
     @SneakyThrows
-    public static ProductSearchRequestImpl fromCoreRequest(CoreRequest request){
-        var json = request.decodePayload().getPayload();
+    public static ProductSearchRequestImpl fromInboundMessage(@NonNull InboundMsg inboundMsg){
+        var json = inboundMsg.getDecodedPayload();
 
         EmptyPayloadCheck.scan(json, "[]");
 
@@ -164,7 +167,7 @@ public class ProductSearchRequestImpl implements ProductSearchRequest {
 
         throwEmptyValueExceptionIfNoValueSetForFilter(filters);
         Arrays.sort(filters, comparator);
-        return new ProductSearchRequestImpl(filters);
+        return new ProductSearchRequestImpl(filters, inboundMsg.getTenantId());
     }
 
     private static void throwEmptyValueExceptionIfNoValueSetForFilter(ProductSearchFilter[] requested){

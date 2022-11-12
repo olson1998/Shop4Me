@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.shop4me.productdatastream.domain.model.request.toolset.RequestPayloadReader.OBJECT_MAPPER;
+import static com.shop4me.productdatastream.domain.model.request.utils.RequestPayloadReader.OBJECT_MAPPER;
 import static java.util.Map.entry;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 

@@ -1,6 +1,6 @@
 package com.shop4me.productdatastream.domain.service.persisting.review;
 
-import com.shop4me.productdatastream.domain.port.persisting.repositories.review.ReviewDeletingExecutor;
+import com.shop4me.productdatastream.domain.port.persisting.review.ReviewDeletingExecutor;
 import com.shop4me.productdatastream.domain.port.requesting.ReviewDeleteRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

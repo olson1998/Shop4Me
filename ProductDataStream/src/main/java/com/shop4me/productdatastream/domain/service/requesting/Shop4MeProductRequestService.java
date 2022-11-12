@@ -1,15 +1,13 @@
 package com.shop4me.productdatastream.domain.service.requesting;
 
-import com.shop4me.productdatastream.domain.model.exception.OperationNotMatchingWithEntityException;
 import com.shop4me.productdatastream.domain.model.request.enumset.Operation;
-import com.shop4me.productdatastream.domain.model.request.product.*;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.product.*;
-import com.shop4me.productdatastream.domain.port.requesting.CoreRequest;
 import com.shop4me.productdatastream.domain.port.requesting.handler.ProductRequestHandler;
+import com.shop4me.productdatastream.domain.model.exception.OperationNotMatchingWithEntityException;
+import com.shop4me.productdatastream.domain.model.request.product.*;
+import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
+import com.shop4me.productdatastream.domain.port.persisting.product.*;
 import lombok.AllArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.CompletableFuture;
+import lombok.NonNull;
 
 @AllArgsConstructor
 
@@ -26,39 +24,39 @@ public class Shop4MeProductRequestService implements ProductRequestHandler {
     private final ProductDeletingExecutor productDeletingService;
 
     @Override
-    public CompletableFuture<Object> handle(CoreRequest request){
-        return CompletableFuture.supplyAsync(()-> delegateRequest(request));
+    public Object handle(InboundMsg inboundMsg){
+        return delegateRequest(inboundMsg);
     }
 
-    private Object delegateRequest(@NotNull CoreRequest  request){
-        switch (Operation.valueOf(request.getOperation())){
+    private Object delegateRequest(@NonNull InboundMsg inboundMsg){
+        switch (Operation.valueOf(inboundMsg.getOperation())){
             case OBTAIN -> {
                 return productObtainingService.execute(
-                        ProductObtainRequestImpl.fromCoreRequest(request)
+                        ProductObtainRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
             case SEARCH -> {
                 return productSearchingService.execute(
-                        ProductSearchRequestImpl.fromCoreRequest(request)
+                        ProductSearchRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
             case SAVE -> {
                 return productSavingService.execute(
-                        ProductSaveRequestImpl.fromCoreRequest(request)
+                        ProductSaveRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
             case EDIT -> {
                 return productEditingService.execute(
-                        ProductEditRequestImpl.fromCoreRequest(request)
+                        ProductEditRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
             case DELETE -> {
                 return productDeletingService.execute(
-                        ProductDeleteRequestImpl.fromCoreRequest(request)
+                        ProductDeleteRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
         }
-        throw new OperationNotMatchingWithEntityException(request.getEntity(), request.getOperation());
+        throw new OperationNotMatchingWithEntityException("PRODUCT", inboundMsg.getOperation());
     }
 
 }

@@ -1,6 +1,6 @@
 package com.shop4me.productdatastream.application.requesting.handler;
 
-import com.shop4me.productdatastream.domain.port.persisting.repositories.product.*;
+import com.shop4me.productdatastream.domain.port.persisting.product.*;
 import com.shop4me.productdatastream.domain.port.requesting.handler.ProductRequestHandler;
 import com.shop4me.productdatastream.domain.service.requesting.Shop4MeProductRequestService;
 import lombok.AllArgsConstructor;

@@ -1,14 +1,15 @@
 package com.shop4me.productdatastream.domain.model.request.review;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.shop4me.productdatastream.domain.model.request.toolset.RequestPayloadReader;
-import com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.properties.review.ReviewProperty;
-import com.shop4me.productdatastream.domain.model.exception.EmptyValueException;
-import com.shop4me.productdatastream.domain.model.request.EmptyPayloadCheck;
 import com.shop4me.productdatastream.domain.model.request.review.tools.ReviewPropertyComparator;
-import com.shop4me.productdatastream.domain.port.requesting.CoreRequest;
+import com.shop4me.productdatastream.domain.model.request.utils.RequestPayloadReader;
+import com.shop4me.productdatastream.domain.model.exception.EmptyValueException;
+import com.shop4me.productdatastream.domain.model.dao.productdatastorage.properties.ReviewProperty;
+import com.shop4me.productdatastream.domain.model.request.EmptyPayloadCheck;
+import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
 import com.shop4me.productdatastream.domain.port.requesting.ReviewEditRequest;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.shop4me.productdatastream.domain.model.data.entities.productdatastorage.properties.review.ReviewProperty.*;
+import static com.shop4me.productdatastream.domain.model.dao.productdatastorage.properties.ReviewProperty.*;
 
 @AllArgsConstructor
 
@@ -87,8 +88,8 @@ public class ReviewEditRequestImpl implements ReviewEditRequest {
     }
 
     @SneakyThrows
-    public static ReviewEditRequestImpl fromCoreRequest(CoreRequest request){
-        var json = request.decodePayload().getPayload();
+    public static ReviewEditRequestImpl fromInboundMessage(@NonNull InboundMsg inboundMsg){
+        var json = inboundMsg.getDecodedPayload();
 
         EmptyPayloadCheck.scan(json, "{}");
 

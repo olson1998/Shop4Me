@@ -1,7 +1,7 @@
 package com.shop4me.productdatastream.application.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shop4me.productdatastream.domain.port.persisting.repositories.componentuser.ComponentUserRepository;
+import com.shop4me.productdatastream.domain.port.persisting.componentuser.ComponentUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

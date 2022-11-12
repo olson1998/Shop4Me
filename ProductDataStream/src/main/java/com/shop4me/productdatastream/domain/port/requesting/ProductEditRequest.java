@@ -7,4 +7,7 @@ public interface ProductEditRequest {
     String writeJpqlQuery();
 
     Map<String, String> getEditMapCopy();
+
+    int getTenantId();
+
 }

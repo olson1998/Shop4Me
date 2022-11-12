@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 public class EmptyValueException extends IllegalArgumentException{
 
-    String msg = "empty value";
+    private String msg = "empty value";
 
     @Override
     public String getMessage() {

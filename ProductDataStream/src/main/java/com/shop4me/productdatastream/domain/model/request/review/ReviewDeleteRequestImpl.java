@@ -1,10 +1,11 @@
 package com.shop4me.productdatastream.domain.model.request.review;
 
-import com.shop4me.productdatastream.domain.model.data.dto.Review;
+import com.shop4me.productdatastream.domain.model.request.utils.RequestPayloadReader;
+import com.shop4me.productdatastream.domain.model.dto.Review;
 import com.shop4me.productdatastream.domain.model.request.EmptyPayloadCheck;
-import com.shop4me.productdatastream.domain.model.request.toolset.RequestPayloadReader;
-import com.shop4me.productdatastream.domain.port.requesting.CoreRequest;
+import com.shop4me.productdatastream.domain.port.messaging.InboundMsg;
 import com.shop4me.productdatastream.domain.port.requesting.ReviewDeleteRequest;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -30,8 +31,8 @@ public class ReviewDeleteRequestImpl implements ReviewDeleteRequest {
     }
 
     @SneakyThrows
-    public static ReviewDeleteRequestImpl fromCoreRequest(CoreRequest request){
-        var json = request.decodePayload().getPayload();
+    public static ReviewDeleteRequestImpl fromInboundMessage(@NonNull InboundMsg inboundMsg){
+        var json = inboundMsg.getDecodedPayload();
 
         EmptyPayloadCheck.scan(json, "{}");
 
