@@ -35,3 +35,18 @@ out/
 
 ### VS Code ###
 .vscode/
+
+###Gradle###
+/.gradle
+/gradlew.bat
+/core/src/main/resources
+
+###ProductDataStream###
+/productdatastream/.gradle
+/productdatastream/gradlew.bat
+/productdatastream/src/main/resources
+/productdatastream/src/java/com/shop4me/productdatastream/application/security/DefaultComponentUserConfig.java
+
+###Core###
+/core/.gradle
+/core/gradlew.bat
