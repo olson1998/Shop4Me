@@ -1,7 +1,7 @@
 package com.shop4me.core.model;
 
-import com.shop4me.core.application.dto.product_data_stream.Category;
-import com.shop4me.core.application.dto.product_data_stream.Product;
+import com.shop4me.core.application.dto.productdatastream.Category;
+import com.shop4me.core.application.dto.productdatastream.Product;
 
 public class ConstantTestDto {
 

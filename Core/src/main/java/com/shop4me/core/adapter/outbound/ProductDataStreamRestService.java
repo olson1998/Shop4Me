@@ -2,9 +2,9 @@ package com.shop4me.core.adapter.outbound;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop4me.core.adapter.outbound.exception.Shop4MeCoreNotAuthenticated;
-import com.shop4me.core.application.dto.product_data_stream.Category;
-import com.shop4me.core.application.dto.product_data_stream.Product;
-import com.shop4me.core.application.dto.product_data_stream.Review;
+import com.shop4me.core.application.dto.productdatastream.Category;
+import com.shop4me.core.application.dto.productdatastream.Product;
+import com.shop4me.core.application.dto.productdatastream.Review;
 import com.shop4me.core.application.requesting.Shop4MeCoreRequest;
 import com.shop4me.core.domain.model.request.tool.ProductSearchFilter;
 import com.shop4me.core.domain.port.web.client.DataStreamWebClient;
@@ -13,6 +13,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
@@ -38,10 +39,9 @@ public class ProductDataStreamRestService {
 
     private final ObjectMapper mapper;
 
-    public Mono<Product[]> requestObtainingProducts(int[] idArray){
+    public Mono<Product[]> requestObtainingProducts(int tenantId, int[] idArray){
         var request = productObtainRequest(idArray);
-        return productDataStreamWebClient.get().post()
-                .uri("/rq")
+        return productDataStreamWebClient(tenantId)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .onStatus(FORBIDDEN, r-> Mono.error(new Shop4MeCoreNotAuthenticated(request.toString(), PRODUCT_DATA_STREAM.name())))
@@ -49,10 +49,9 @@ public class ProductDataStreamRestService {
                 .bodyToMono(Product[].class);
     }
 
-    public Mono<Map<String, String>> requestSavingProducts(Map<String, Product> productSavingMap){
+    public Mono<Map<String, String>> requestSavingProducts(int tenantId, Map<String, Product> productSavingMap){
         var request = productSaveRequest(productSavingMap);
-        return productDataStreamWebClient.get().post()
-                .uri("/rq")
+        return productDataStreamWebClient(tenantId)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .onStatus(FORBIDDEN, r-> Mono.error(new Shop4MeCoreNotAuthenticated(request.toString(), PRODUCT_DATA_STREAM.name())))
@@ -60,10 +59,9 @@ public class ProductDataStreamRestService {
                 .bodyToMono(MAP_STR_STR_REF);
     }
 
-    public Mono<Map<String, Integer>> requestEditingProducts(Map<String, String> editingProductMap){
+    public Mono<Map<String, Integer>> requestEditingProducts(int tenantId, Map<String, String> editingProductMap){
         var request = productEditRequest(editingProductMap);
-        return productDataStreamWebClient.get().post()
-                .uri("/rq")
+        return productDataStreamWebClient(tenantId)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .onStatus(FORBIDDEN, r-> Mono.error(new Shop4MeCoreNotAuthenticated(request.toString(), PRODUCT_DATA_STREAM.name())))
@@ -71,10 +69,9 @@ public class ProductDataStreamRestService {
                 .bodyToMono(MAP_STR_INT_REF);
     }
 
-    public Mono<Integer[]> requestSearchingProduct(List<ProductSearchFilter> productSearchFilters){
+    public Mono<Integer[]> requestSearchingProduct(int tenantId, List<ProductSearchFilter> productSearchFilters){
         var request = productSearchRequest(productSearchFilters);
-        return productDataStreamWebClient.get().post()
-                .uri("/rq")
+        return productDataStreamWebClient(tenantId)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .onStatus(FORBIDDEN, r-> Mono.error(new Shop4MeCoreNotAuthenticated(request.toString(), PRODUCT_DATA_STREAM.name())))
@@ -82,10 +79,9 @@ public class ProductDataStreamRestService {
                 .bodyToMono(Integer[].class);
     }
 
-    public Mono<Map<String, Integer>> requestDeletingProduct(Product product){
+    public Mono<Map<String, Integer>> requestDeletingProduct(int tenantId, Product product){
         var request = productDeleteRequest(product);
-        return productDataStreamWebClient.get().post()
-                .uri("/rq")
+        return productDataStreamWebClient(tenantId)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .onStatus(FORBIDDEN, r-> Mono.error(new Shop4MeCoreNotAuthenticated(request.toString(), PRODUCT_DATA_STREAM.name())))
@@ -93,10 +89,9 @@ public class ProductDataStreamRestService {
                 .bodyToMono(MAP_STR_INT_REF);
     }
 
-    public Mono<Map<String, String>> requestSavingReview(Map<String, Review> reviewSaveMap) {
+    public Mono<Map<String, String>> requestSavingReview(int tenantId, Map<String, Review> reviewSaveMap) {
         var request = reviewSaveRequest(reviewSaveMap);
-        return productDataStreamWebClient.get().post()
-                .uri("/rq")
+        return productDataStreamWebClient(tenantId)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .onStatus(FORBIDDEN, r-> Mono.error(new Shop4MeCoreNotAuthenticated(request.toString(), PRODUCT_DATA_STREAM.name())))
@@ -104,10 +99,9 @@ public class ProductDataStreamRestService {
                 .bodyToMono(MAP_STR_STR_REF);
     }
 
-    public Mono<Map<String, Integer>> requestEditingReview(Map<String, String> reviewEditMap){
+    public Mono<Map<String, Integer>> requestEditingReview(int tenantId, Map<String, String> reviewEditMap){
         var request = reviewEditRequest(reviewEditMap);
-        return productDataStreamWebClient.get().post()
-                .uri("/rq")
+        return productDataStreamWebClient(tenantId)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .onStatus(FORBIDDEN, r-> Mono.error(new Shop4MeCoreNotAuthenticated(request.toString(), PRODUCT_DATA_STREAM.name())))
@@ -115,11 +109,10 @@ public class ProductDataStreamRestService {
                 .bodyToMono(MAP_STR_INT_REF);
     }
 
-    public Mono<Map<String, Integer>> requestDeletingReview(Review review){
+    public Mono<Map<String, Integer>> requestDeletingReview(int tenantId, Review review){
         var request = reviewDeletingRequest(review);
 
-        return productDataStreamWebClient.get().post()
-                .uri("/rq")
+        return productDataStreamWebClient(tenantId)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .onStatus(FORBIDDEN, r-> Mono.error(new Shop4MeCoreNotAuthenticated(request.toString(), PRODUCT_DATA_STREAM.name())))
@@ -127,10 +120,9 @@ public class ProductDataStreamRestService {
                 .bodyToMono(MAP_STR_INT_REF);
     }
 
-    public Mono<Map<String, String>> requestSavingCategory(Map<String, Category> categorySaveMap){
+    public Mono<Map<String, String>> requestSavingCategory(int tenantId, Map<String, Category> categorySaveMap){
         var request = categorySavingRequest(categorySaveMap);
-        return productDataStreamWebClient.get().post()
-                .uri("/rq")
+        return productDataStreamWebClient(tenantId)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .onStatus(FORBIDDEN, r-> Mono.error(new Shop4MeCoreNotAuthenticated(request.toString(), PRODUCT_DATA_STREAM.name())))
@@ -193,5 +185,11 @@ public class ProductDataStreamRestService {
 
     private Shop4MeCoreRequest categorySavingRequest(Map<String, Category> categorySaveMap){
         return createCategoryRequest("SAVE", categorySaveMap);
+    }
+
+    private WebClient.RequestBodySpec productDataStreamWebClient(int tenantId){
+        return productDataStreamWebClient.get().post()
+                .uri("/rq")
+                .header("tenant", tenantId+"");
     }
 }

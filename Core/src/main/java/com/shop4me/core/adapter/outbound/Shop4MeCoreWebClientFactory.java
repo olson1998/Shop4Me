@@ -106,7 +106,7 @@ public class Shop4MeCoreWebClientFactory implements DataStreamWebClientFactory {
                     plan.getComponent(),
                     plan.getUrl()
             );
-            var authVal = "Auth " + token;
+            var authVal = "Barrier " + token;
 
             var authClient = WebClient.builder()
                     .baseUrl(plan.getUrl())

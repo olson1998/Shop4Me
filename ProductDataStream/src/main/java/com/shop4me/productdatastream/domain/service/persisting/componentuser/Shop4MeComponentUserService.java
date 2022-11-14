@@ -18,6 +18,25 @@ public class Shop4MeComponentUserService implements ComponentUserRepository {
         return Optional.of(selectComponentUserByUsername(username));
     }
 
+    @Override
+    public boolean existComponentUser(String username, String password) {
+        return componentUserEntityManager
+                .createQuery(
+                        "select case when count(u.username)>0 " +
+                        "then true else false end from Shop4MeComponentUser u " +
+                        "where u.username=:username and u.password=:pass",
+                        Boolean.class)
+                .setParameter("username", username)
+                .setParameter("pass", password)
+                .getSingleResult();
+    }
+
+    @Override
+    public void save(String username, String password, String authority) {
+        var user = new Shop4MeComponentUser(username, password, authority);
+        componentUserEntityManager.persist(user);
+    }
+
     public Shop4MeComponentUser selectComponentUserByUsername(String username) {
         return componentUserEntityManager
                 .createQuery(

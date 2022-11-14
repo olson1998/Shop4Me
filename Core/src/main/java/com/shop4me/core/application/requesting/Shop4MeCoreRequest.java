@@ -1,14 +1,15 @@
 package com.shop4me.core.application.requesting;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+import java.util.UUID;
 
-@EqualsAndHashCode
+@RequiredArgsConstructor
 public class Shop4MeCoreRequest {
 
+    @JsonProperty(value = "id", required = true)
+    private final String requestId = UUID.randomUUID().toString();
     @JsonProperty(value = "entity", required = true)
     private final String entity;
 

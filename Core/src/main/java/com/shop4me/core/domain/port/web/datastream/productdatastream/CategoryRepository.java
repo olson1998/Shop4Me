@@ -7,5 +7,5 @@ import java.util.Map;
 
 public interface CategoryRepository {
 
-    Mono<Map<String, String>> saveCategories(Map<String, CategoryDto> categories);
+    Mono<Map<String, String>> saveCategories(int tenantId, Map<String, CategoryDto> categories);
 }

@@ -1,84 +1,64 @@
 package com.shop4me.core.domain.service.processing.report;
 
 import com.shop4me.core.domain.model.request.RequestProcessingReportImpl;
-import com.shop4me.core.domain.model.request.keys.RequestProcessingStatus;
-import com.shop4me.core.domain.port.dto.productdatastream.CategoryDto;
-import com.shop4me.core.domain.port.dto.productdatastream.ProductDto;
-import com.shop4me.core.domain.port.dto.productdatastream.ReviewDto;
 import com.shop4me.core.domain.port.dto.response.RequestProcessingReport;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
-import static com.shop4me.core.domain.service.processing.report.utils.ResponseStatusPredicationService.ONLY_FAILURE_RESPONSES;
-import static com.shop4me.core.domain.service.processing.report.utils.ResponseStatusPredicationService.ONLY_SUCCESS_RESPONSES;
+import static com.shop4me.core.domain.model.request.keys.RequestProcessingStatus.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SavingReportingService {
 
-    public static RequestProcessingReport categorySavingReport(Map< String, CategoryDto> categorySavingMap, Map<String, String> response){
-        var categorySavingStatusMap = writeCategorySavingDetailsMap(categorySavingMap, response);
-        return writeRequestProcessingReport(categorySavingStatusMap, response);
+    public static RequestProcessingReport write(Map<String, String> savingResult, Collection<String> correlationIds){
+        var status = defineProcessingResult(savingResult.values());
+        var resultMap = writeResultMap(savingResult, correlationIds);
+        return new RequestProcessingReportImpl(status, resultMap);
     }
 
-    public static RequestProcessingReport productSavingReport(Map<String, ProductDto> productSavingMap, Map<String, String> response){
-        var productSavingStatusMap = writeProductSavingDetailsMap(productSavingMap, response);
-        return writeRequestProcessingReport(productSavingStatusMap, response);
-    }
-
-    public static RequestProcessingReport reviewSavingReport(Map<String, ReviewDto> reviewSavingMap, Map<String, String> response){
-        var reviewSavinMap= writeReviewSavingDetailsMap(reviewSavingMap, response);
-        return writeRequestProcessingReport(reviewSavinMap, response);
-    }
-
-    private static RequestProcessingReport writeRequestProcessingReport( Map<Object, String> dtoStatusMap, Map<String, String> response) {
-        if(ONLY_SUCCESS_RESPONSES.test(response)){
-            return new RequestProcessingReportImpl(
-                    RequestProcessingStatus.SUCCESS.name(),
-                    dtoStatusMap
-            );
-        }else if(ONLY_FAILURE_RESPONSES.test(response)){
-            return new RequestProcessingReportImpl(
-                    RequestProcessingStatus.FAILED.name(),
-                    dtoStatusMap
-            );
+    protected static String defineProcessingResult(Collection<String> persistingResults){
+        if(CHECK_IF_SUCCESS.test(persistingResults)){
+            return SUCCESS.name();
+        } else if (CHECK_IF_FAILURE.test(persistingResults)) {
+            return FAILED.name();
         }else {
-            return new RequestProcessingReportImpl(
-                    RequestProcessingStatus.PARTLY_SUCCESS.name(),
-                    dtoStatusMap
-            );
+            return PARTLY_SUCCESS.name();
         }
     }
 
-    private static Map<Object, String> writeCategorySavingDetailsMap(Map< String, CategoryDto> categorySavingMap, Map<String, String> response){
-        var reportMap = new HashMap<Object, String>();
-        response.forEach((correlationId, status)->{
-            var category = categorySavingMap.get(correlationId);
-
-            reportMap.put(category, status);
+    private static Map<String, String> writeResultMap(Map<String, String> savingResult, Collection<String> correlationIds){
+        var recordIndex = new AtomicInteger(1);
+        var resultMap = new HashMap<String, String>();
+        correlationIds.forEach(correlationId->{
+            var index = recordIndex.getAndIncrement()+"";
+            var status = savingResult.get(correlationId);
+            resultMap.put(index, status);
         });
-        return reportMap;
+        return resultMap;
     }
 
-    public static Map<Object, String> writeProductSavingDetailsMap(Map<String, ProductDto> productSavingMap, Map<String, String> response){
-        var reportMap = new HashMap<Object, String>();
-        response.forEach((correlationId, status)->{
-            var product = productSavingMap.get(correlationId);
+    private static final Predicate<Collection<String>> CHECK_IF_SUCCESS = persistingResults->{
+        var isSuccess = new AtomicBoolean();
+        persistingResults.stream()
+                .filter(status-> status.equals("FAILURE"))
+                .findFirst()
+                .ifPresentOrElse(status-> isSuccess.set(false), ()-> isSuccess.set(true));
+        return isSuccess.get();
+    };
 
-            reportMap.put(product, status);
-        });
-        return reportMap;
-    }
-
-    public static Map<Object, String> writeReviewSavingDetailsMap(Map<String, ReviewDto> reviewSavingMap, Map<String, String> response){
-        var reportMap = new HashMap<Object, String>();
-        response.forEach((correlationId, status)->{
-            var product = reviewSavingMap.get(correlationId);
-
-            reportMap.put(product, status);
-        });
-        return reportMap;
-    }
+    private static final Predicate<Collection<String>> CHECK_IF_FAILURE = persistingResults->{
+        var isSuccess = new AtomicBoolean();
+        persistingResults.stream()
+                .filter(status-> status.equals("SUCCESS"))
+                .findFirst()
+                .ifPresentOrElse(status-> isSuccess.set(false), ()-> isSuccess.set(true));
+        return isSuccess.get();
+    };
 }

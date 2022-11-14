@@ -37,58 +37,58 @@ public class AdminRequestService implements AdminRequestRepository {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public CompletableFuture<RequestProcessingReport> saveProducts(ProductDto[] products){
+    public CompletableFuture<RequestProcessingReport> saveProducts(int tenantId, ProductDto[] products){
         var productSaveMap = createSavingProductMap(products);
         log.info("REQUESTED SAVING: {}", productSaveMap);
-        return productRepository.requestSavingProducts(productSaveMap)
+        return productRepository.requestSavingProducts(tenantId, productSaveMap)
                 .toFuture()
-                .thenApply(response -> SavingReportingService.productSavingReport(productSaveMap, response))
+                .thenApply(response -> SavingReportingService.write(response, productSaveMap.keySet()))
                 .exceptionally(ErrorReportingService::error);
     }
 
     @Override
-    public CompletableFuture<RequestProcessingReport> saveCategories(CategoryDto[] categories){
+    public CompletableFuture<RequestProcessingReport> saveCategories(int tenantId, CategoryDto[] categories){
         var categoriesSaveMap = createSaveCategoryMap(categories);
         log.info("REQUESTED SAVING: {}", categoriesSaveMap);
-        return categoryRepository.saveCategories(categoriesSaveMap)
+        return categoryRepository.saveCategories(tenantId, categoriesSaveMap)
                 .toFuture()
-                .thenApply(response -> SavingReportingService.categorySavingReport(categoriesSaveMap, response))
+                .thenApply(response -> SavingReportingService.write(response, categoriesSaveMap.keySet()))
                 .exceptionally(ErrorReportingService::error);
     }
 
     @Override
-    public CompletableFuture<RequestProcessingReport> deleteProduct(ProductDto product){
+    public CompletableFuture<RequestProcessingReport> deleteProduct(int tenantId, ProductDto product){
         log.info("REQUESTED DELETING: {}",  product);
-        return productRepository.requestDeletingProduct(product)
+        return productRepository.requestDeletingProduct(tenantId, product)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
                 .exceptionally(ErrorReportingService::error);
     }
 
     @Override
-    public CompletableFuture<RequestProcessingReport> editProduct(Map<String, String> productPropertyNewValueMap){
+    public CompletableFuture<RequestProcessingReport> editProduct(int tenantId, Map<String, String> productPropertyNewValueMap){
         log.info("REQUESTED EDITING: {}", productPropertyNewValueMap);
-        return productRepository.requestEditingProduct(productPropertyNewValueMap)
+        return productRepository.requestEditingProduct(tenantId, productPropertyNewValueMap)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
                 .exceptionally(ErrorReportingService::error);
     }
 
     @Override
-    public CompletableFuture<RequestProcessingReport> editProductsCategories(String productId, Long[] categoriesIds) {
+    public CompletableFuture<RequestProcessingReport> editProductsCategories(int tenantId, String productId, Long[] categoriesIds) {
         log.info("REQUESTED EDITING PRODUCT: '{}' NEW CATEGORIES: {}", productId, categoriesIds);
         var productsCategoriesEditMap = createProductsCategoryEditMap(productId, categoriesIds);
-        return productRepository.requestEditingProduct(productsCategoriesEditMap)
+        return productRepository.requestEditingProduct(tenantId, productsCategoriesEditMap)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
                 .exceptionally(ErrorReportingService::error);
     }
 
     @Override
-    public CompletableFuture<RequestProcessingReport> editProductsImageUrls(String productId, String[] imageUrlsIds) {
+    public CompletableFuture<RequestProcessingReport> editProductsImageUrls(int tenantId, String productId, String[] imageUrlsIds) {
         log.info("REQUESTED EDITING PRODUCT: '{}' NEW IMAGE URLS: {}", productId, imageUrlsIds);
         var productsImageUrlsEditMap = createProductsImageUrlsEditMap(productId, imageUrlsIds);
-        return productRepository.requestEditingProduct(productsImageUrlsEditMap)
+        return productRepository.requestEditingProduct(tenantId, productsImageUrlsEditMap)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
                 .exceptionally(ErrorReportingService::error);
@@ -124,7 +124,8 @@ public class AdminRequestService implements AdminRequestRepository {
 
     private Map<String, ProductDto> createSavingProductMap(@NonNull ProductDto[] products){
         var editMap = new HashMap<String, ProductDto>();
-        Arrays.stream(products).forEach(product -> editMap.put(UUID.randomUUID().toString(), product));
+        Arrays.stream(products)
+                .forEach(product -> editMap.put(UUID.randomUUID().toString(), product));
         return editMap;
     }
 

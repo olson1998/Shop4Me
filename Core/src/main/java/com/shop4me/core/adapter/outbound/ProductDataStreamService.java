@@ -1,8 +1,8 @@
 package com.shop4me.core.adapter.outbound;
 
-import com.shop4me.core.application.dto.product_data_stream.Category;
-import com.shop4me.core.application.dto.product_data_stream.Product;
-import com.shop4me.core.application.dto.product_data_stream.Review;
+import com.shop4me.core.application.dto.productdatastream.Category;
+import com.shop4me.core.application.dto.productdatastream.Product;
+import com.shop4me.core.application.dto.productdatastream.Review;
 import com.shop4me.core.domain.model.request.tool.ProductSearchFilter;
 import com.shop4me.core.domain.port.dto.productdatastream.CategoryDto;
 import com.shop4me.core.domain.port.dto.productdatastream.ProductDto;
@@ -27,56 +27,56 @@ public class ProductDataStreamService implements ProductDataStream {
     private final ProductDataStreamRestService productDataStream;
 
     @Override
-    public Mono<List<ProductDto>> requestObtainingProducts(int[] idArray) {
-        return productDataStream.requestObtainingProducts(idArray)
+    public Mono<List<ProductDto>> requestObtainingProducts(int tenantId, int[] idArray) {
+        return productDataStream.requestObtainingProducts(tenantId, idArray)
                 .map(this::createProductDtoList);
     }
 
     @Override
-    public Mono<Map<String, String>> requestSavingProducts(Map<String, ProductDto> productDtoSavingMap) {
+    public Mono<Map<String, String>> requestSavingProducts(int tenantId, Map<String, ProductDto> productDtoSavingMap) {
         var productSavingMap = createSavingMapFromSavingMapDto(productDtoSavingMap);
-        return productDataStream.requestSavingProducts(productSavingMap);
+        return productDataStream.requestSavingProducts(tenantId, productSavingMap);
     }
 
     @Override
-    public Mono<Map<String, Integer>> requestEditingProducts(Map<String, String> editingProductMap) {
-        return productDataStream.requestEditingProducts(editingProductMap);
+    public Mono<Map<String, Integer>> requestEditingProducts(int tenantId, Map<String, String> editingProductMap) {
+        return productDataStream.requestEditingProducts(tenantId, editingProductMap);
     }
 
     @Override
-    public Mono<Integer[]> requestSearchingProduct(List<ProductSearchFilterDto> productSearchFiltersDtoList) {
+    public Mono<Integer[]> requestSearchingProduct(int tenantId, List<ProductSearchFilterDto> productSearchFiltersDtoList) {
         var productSearchFilters = createProductSearchFiltersFromDto(productSearchFiltersDtoList);
-        return productDataStream.requestSearchingProduct(productSearchFilters);
+        return productDataStream.requestSearchingProduct(tenantId, productSearchFilters);
     }
 
     @Override
-    public Mono<Map<String, Integer>> requestDeletingProduct(ProductDto productDto) {
+    public Mono<Map<String, Integer>> requestDeletingProduct(int tenantId, ProductDto productDto) {
         var product = Product.fromDto(productDto);
-        return productDataStream.requestDeletingProduct(product);
+        return productDataStream.requestDeletingProduct(tenantId, product);
     }
 
     @Override
-    public Mono<Map<String, String>> requestSavingReview(Map<String, ReviewDto> reviewDtoSavingMap) {
+    public Mono<Map<String, String>> requestSavingReview(int tenantId, Map<String, ReviewDto> reviewDtoSavingMap) {
         var reviewSavingMap = createSavingMapFromReviewDtoSavingMap(reviewDtoSavingMap);
-        return productDataStream.requestSavingReview(reviewSavingMap);
+        return productDataStream.requestSavingReview(tenantId, reviewSavingMap);
     }
 
     @Override
-    public Mono<Map<String, Integer>> requestEditingReview(Map<String, String> reviewEditMap) {
-        return productDataStream.requestEditingReview(reviewEditMap);
+    public Mono<Map<String, Integer>> requestEditingReview(int tenantId, Map<String, String> reviewEditMap) {
+        return productDataStream.requestEditingReview(tenantId, reviewEditMap);
     }
 
     @Override
-    public Mono<Map<String, Integer>> requestDeletingReview(ReviewDto reviewDto) {
+    public Mono<Map<String, Integer>> requestDeletingReview(int tenantId, ReviewDto reviewDto) {
         var review = Review.fromDto(reviewDto);
 
-        return productDataStream.requestDeletingReview(review);
+        return productDataStream.requestDeletingReview(tenantId, review);
     }
 
     @Override
-    public Mono<Map<String, String>> requestSavingCategory(Map<String, CategoryDto> categoryDtoSaveMap) {
+    public Mono<Map<String, String>> requestSavingCategory(int tenantId, Map<String, CategoryDto> categoryDtoSaveMap) {
         var categorySaveMap = createSavingMapFromCategorySavingMapDto(categoryDtoSaveMap);
-        return productDataStream.requestSavingCategory(categorySaveMap);
+        return productDataStream.requestSavingCategory(tenantId, categorySaveMap);
     }
 
     private List<ProductDto> createProductDtoList(Product[] products){

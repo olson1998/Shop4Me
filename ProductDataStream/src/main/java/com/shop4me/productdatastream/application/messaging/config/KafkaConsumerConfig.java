@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static java.util.Map.entry;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
+import static org.springframework.kafka.support.serializer.JsonDeserializer.TRUSTED_PACKAGES;
 
 @Configuration
 @RequiredArgsConstructor
@@ -30,10 +31,11 @@ public class KafkaConsumerConfig {
     @Bean
     public ConsumerFactory<String, InboundMessage> inboundMessageConsumerFactory(){
         var consumerProps = consumerProps();
+        var jsonDeserializer = jsonDeserializer();
         return new DefaultKafkaConsumerFactory<>(
                 consumerProps,
                 stringDeserializer,
-                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(InboundMessage.class))
+                jsonDeserializer
         );
     }
 
@@ -51,5 +53,12 @@ public class KafkaConsumerConfig {
                 entry(KEY_DESERIALIZER_CLASS_CONFIG, StringSerializer.class),
                 entry(VALUE_DESERIALIZER_CLASS_CONFIG, JsonSerializer.class)
         );
+    }
+
+    private ErrorHandlingDeserializer<InboundMessage> jsonDeserializer(){
+        var jsonDeserializer = new JsonDeserializer<>(InboundMessage.class);
+        //jsonDeserializer.addTrustedPackages("com.shop4me.core.application.dto.*");
+        jsonDeserializer.ignoreTypeHeaders();
+        return new ErrorHandlingDeserializer<>(jsonDeserializer);
     }
 }

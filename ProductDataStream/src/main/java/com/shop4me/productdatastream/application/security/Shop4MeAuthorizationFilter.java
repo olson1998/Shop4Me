@@ -47,9 +47,9 @@ public class Shop4MeAuthorizationFilter extends OncePerRequestFilter {
             var authHeader = request.getHeader(AUTHORIZATION);
             var requestUrl = request.getRequestURL().toString();
 
-            if(authHeader != null && authHeader.startsWith("Auth ")){
+            if(authHeader != null && authHeader.startsWith("Barrier ")){
                 try{
-                    var token = authHeader.substring("Auth ".length());
+                    var token = authHeader.substring("Barrier ".length());
                     var algorithm = Algorithm.HMAC256(jwtSignature.getBytes());
                     var verifier = JWT.require(algorithm).build();
                     var decodedJWT = verifier.verify(token);
