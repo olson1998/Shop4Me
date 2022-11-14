@@ -5,7 +5,6 @@ public interface InboundMsg {
     String getMessageId();
 
     String getTopic();
-
     int getTenantId();
 
     String getOperation();

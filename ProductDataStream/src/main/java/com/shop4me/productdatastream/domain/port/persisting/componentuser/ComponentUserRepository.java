@@ -10,4 +10,9 @@ public interface ComponentUserRepository {
     @Transactional("securityCredentialsTransactionManager")
     Optional<ComponentUser> getComponentUserByUsername(String username);
 
+    @Transactional("securityCredentialsTransactionManager")
+    boolean existComponentUser(String username, String password);
+
+    @Transactional("securityCredentialsTransactionManager")
+    void save(String username, String password, String authority);
 }

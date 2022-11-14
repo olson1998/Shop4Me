@@ -18,8 +18,7 @@ public class OutboundMessage implements OutboundMsg {
     @JsonProperty(value = "status", required = true)
     private final String processingStatus;
 
-    @JsonProperty(value = "header", required = true)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty(value = "header")
     private final String header;
 
     @JsonProperty(value = "payload", required = true)

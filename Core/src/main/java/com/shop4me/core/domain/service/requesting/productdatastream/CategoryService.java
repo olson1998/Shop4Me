@@ -17,7 +17,7 @@ public class CategoryService implements CategoryRepository {
     private final ProductDataStream productDataStream;
 
     @Override
-    public Mono<Map<String, String>> saveCategories(Map<String, CategoryDto> categorySaveMap){
-        return productDataStream.requestSavingCategory(categorySaveMap);
+    public Mono<Map<String, String>> saveCategories(int tenantId, Map<String, CategoryDto> categorySaveMap){
+        return productDataStream.requestSavingCategory(tenantId, categorySaveMap);
     }
 }

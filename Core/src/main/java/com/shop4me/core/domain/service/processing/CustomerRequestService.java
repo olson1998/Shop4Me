@@ -1,6 +1,6 @@
 package com.shop4me.core.domain.service.processing;
 
-import com.shop4me.core.application.dto.product_data_stream.Review;
+import com.shop4me.core.application.dto.productdatastream.Review;
 import com.shop4me.core.domain.port.dto.productdatastream.ReviewDto;
 import com.shop4me.core.domain.port.dto.response.RequestProcessingReport;
 import com.shop4me.core.domain.port.requesting.CustomerRequestRepository;
@@ -8,7 +8,6 @@ import com.shop4me.core.domain.port.web.datastream.productdatastream.ReviewRepos
 import com.shop4me.core.domain.service.processing.report.AffectedRowsReportingServing;
 import com.shop4me.core.domain.service.processing.report.ErrorReportingService;
 import com.shop4me.core.domain.service.processing.report.SavingReportingService;
-import com.shop4me.core.domain.service.processing.utils.RequestProcessingExceptionHandler;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -27,28 +26,28 @@ public class CustomerRequestService implements CustomerRequestRepository {
     private final ReviewRepository reviewRepository;
 
     @Override
-    public CompletableFuture<RequestProcessingReport> saveCustomerReview(List<ReviewDto> reviews){
+    public CompletableFuture<RequestProcessingReport> saveCustomerReview(int tenantId, List<ReviewDto> reviews){
         log.info("CUSTOMER ip: {}, request to save: {}", "?", reviews);
         var reviewSaveMap = createReviewSaveMap(reviews);
-        return reviewRepository.saveReviews(reviewSaveMap)
+        return reviewRepository.saveReviews(tenantId, reviewSaveMap)
                 .toFuture()
-                .thenApply(response -> SavingReportingService.reviewSavingReport(reviewSaveMap, response))
+                .thenApply(response -> SavingReportingService.write(response, reviewSaveMap.keySet()))
                 .exceptionally(ErrorReportingService::error);
     }
 
     @Override
-    public CompletableFuture<RequestProcessingReport> editCustomerReview(Map<String, String> reviewPropertyNewValueMap){
+    public CompletableFuture<RequestProcessingReport> editCustomerReview(int tenantId, Map<String, String> reviewPropertyNewValueMap){
         log.info("CUSTOMER ip: {}, requested to edit: {}", "?", reviewPropertyNewValueMap);
-        return reviewRepository.editReview(reviewPropertyNewValueMap)
+        return reviewRepository.editReview(tenantId, reviewPropertyNewValueMap)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
                 .exceptionally(ErrorReportingService::error);
     }
 
     @Override
-    public CompletableFuture<RequestProcessingReport> deleteCustomerReview(Review review){
+    public CompletableFuture<RequestProcessingReport> deleteCustomerReview(int tenantId, Review review){
         log.info("CUSTOMER ip: {}, requested to delete: {}", "?", review);
-        return reviewRepository.deleteReview(review)
+        return reviewRepository.deleteReview(tenantId, review)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
                 .exceptionally(ErrorReportingService::error);

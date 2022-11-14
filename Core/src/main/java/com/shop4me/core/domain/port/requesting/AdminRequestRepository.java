@@ -9,15 +9,15 @@ import java.util.concurrent.CompletableFuture;
 
 public interface AdminRequestRepository {
 
-    CompletableFuture<RequestProcessingReport> saveProducts(ProductDto[] products);
+    CompletableFuture<RequestProcessingReport> saveProducts(int tenantId, ProductDto[] products);
 
-    CompletableFuture<RequestProcessingReport> saveCategories(CategoryDto[] categories);
+    CompletableFuture<RequestProcessingReport> saveCategories(int tenantId, CategoryDto[] categories);
 
-    CompletableFuture<RequestProcessingReport> deleteProduct(ProductDto product);
+    CompletableFuture<RequestProcessingReport> deleteProduct(int tenantId, ProductDto product);
 
-    CompletableFuture<RequestProcessingReport> editProduct(Map<String, String> productPropertyNewValueMap);
+    CompletableFuture<RequestProcessingReport> editProduct(int tenantId, Map<String, String> productPropertyNewValueMap);
 
-    CompletableFuture<RequestProcessingReport> editProductsCategories(String productId, Long[] categoriesIds);
+    CompletableFuture<RequestProcessingReport> editProductsCategories(int tenantId, String productId, Long[] categoriesIds);
 
-    CompletableFuture<RequestProcessingReport> editProductsImageUrls(String productId, String[] imageUrlsIds);
+    CompletableFuture<RequestProcessingReport> editProductsImageUrls(int tenantId, String productId, String[] imageUrlsIds);
 }
