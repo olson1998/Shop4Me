@@ -16,6 +16,4 @@ public interface ReviewDto {
 
     String getPublishingDate();
 
-    String savingKey();
-
 }

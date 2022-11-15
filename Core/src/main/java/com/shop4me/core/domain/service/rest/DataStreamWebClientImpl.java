@@ -1,7 +1,7 @@
 package com.shop4me.core.domain.service.rest;
 
 import com.shop4me.core.domain.model.exception.WebClientNotSetUpException;
-import com.shop4me.core.domain.model.rest.WebClientFabricationPlanImpl;
+import com.shop4me.core.domain.model.request.WebClientFabricationPlanImpl;
 import com.shop4me.core.domain.port.web.client.DataStreamWebClient;
 import com.shop4me.core.domain.port.web.client.DataStreamWebClientFactory;
 import lombok.extern.slf4j.Slf4j;

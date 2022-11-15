@@ -1,19 +1,14 @@
-package com.shop4me.core.application.dto.productdatastream;
+package com.shop4me.core.domain.model.dto.productdatastream;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shop4me.core.domain.port.dto.productdatastream.ReviewDto;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @Getter
-
-@AllArgsConstructor
 @NoArgsConstructor
-
-public class Review implements ReviewDto {
+public class ReviewRecord implements ReviewDto {
 
     @JsonProperty(value = "id", access = JsonProperty.Access.READ_ONLY)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -41,26 +36,4 @@ public class Review implements ReviewDto {
     @JsonProperty(value = "publishing_timestamp", access = JsonProperty.Access.READ_ONLY)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String publishingDate;
-
-    public static Review fromDto(@NonNull ReviewDto reviewDto){
-        return new Review(
-                reviewDto.getId(),
-                reviewDto.getProductId(),
-                reviewDto.getReviewerId(),
-                reviewDto.getReviewerName(),
-                reviewDto.getPoints(),
-                reviewDto.getText(),
-                reviewDto.getPublishingDate()
-        );
-    }
-
-    @Override
-    public String toString() {
-        return "Review{" +
-                "id=" + id +
-                ", productId=" + productId +
-                ", reviewerId=" + reviewerId +
-                ", reviewerName='" + reviewerName + '\'' +
-                '}';
-    }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.shop4me.productdatastream.domain.model.dao.productdatastorage.properties.ProductProperty.CATEGORY;
+import static com.shop4me.productdatastream.domain.model.dao.productdatastorage.properties.ProductProperty.ID;
 import static com.shop4me.productdatastream.domain.model.request.utils.EntityRelationOperation.ADD;
 import static com.shop4me.productdatastream.domain.model.request.utils.EntityRelationOperation.REMOVE;
 import static com.shop4me.productdatastream.domain.service.persisting.product.ProductEditingService.CATEGORY_ADD_KEY;
@@ -29,10 +30,11 @@ public class ProductRelationEditingService {
     private final ObjectMapper objectMapper;
 
     public LinkedMultiValueMap<String, Long> editCategories(Map<String, String> productEditMap, TypedQuery<ProductEntity> selectTargetProductQuery){
-        log.info("CHANGING PRODUCT RELATIONS WITH CATEGORIES");
         var resultMap = new LinkedMultiValueMap<String, Long>();
+        var productId = productEditMap.get(ID.name());
         var json = productEditMap.get(CATEGORY.name());
         var relations = readEntityRelationChanges(json);
+        log.info("CHANGING PRODUCT ID='{}' RELATIONS WITH CATEGORIES: {}", productId, relations);
         var product = selectTargetProductQuery.getSingleResult();
 
         Arrays.stream(relations).forEach(relation->{

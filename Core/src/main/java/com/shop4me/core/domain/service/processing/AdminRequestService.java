@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop4me.core.domain.model.exception.ProductIdNotANumberException;
 import com.shop4me.core.domain.port.dto.productdatastream.CategoryDto;
 import com.shop4me.core.domain.port.dto.productdatastream.ProductDto;
+import com.shop4me.core.domain.port.dto.productdatastream.utils.ProductSearchFilterDto;
 import com.shop4me.core.domain.port.dto.response.RequestProcessingReport;
+import com.shop4me.core.domain.port.dto.utils.RelationEdit;
 import com.shop4me.core.domain.port.requesting.AdminRequestRepository;
 import com.shop4me.core.domain.port.web.datastream.productdatastream.CategoryRepository;
 import com.shop4me.core.domain.port.web.datastream.productdatastream.ProductRepository;
@@ -39,7 +41,7 @@ public class AdminRequestService implements AdminRequestRepository {
     @Override
     public CompletableFuture<RequestProcessingReport> saveProducts(int tenantId, ProductDto[] products){
         var productSaveMap = createSavingProductMap(products);
-        log.info("REQUESTED SAVING: {}", productSaveMap);
+        log.info("ADMIN OF TENANT: '{}', REQUESTED SAVING: {} PRODUCTS",tenantId, productSaveMap.size());
         return productRepository.requestSavingProducts(tenantId, productSaveMap)
                 .toFuture()
                 .thenApply(response -> SavingReportingService.write(response, productSaveMap.keySet()))
@@ -47,9 +49,14 @@ public class AdminRequestService implements AdminRequestRepository {
     }
 
     @Override
+    public CompletableFuture<ProductDto[]> searchAndObtainProducts(int tenantId, ProductSearchFilterDto[] searchFilters) {
+        return null;
+    }
+
+    @Override
     public CompletableFuture<RequestProcessingReport> saveCategories(int tenantId, CategoryDto[] categories){
         var categoriesSaveMap = createSaveCategoryMap(categories);
-        log.info("REQUESTED SAVING: {}", categoriesSaveMap);
+        log.info("ADMIN OF TENANT: '{}', REQUESTED SAVING: {} CATEGORIES", tenantId, categoriesSaveMap.size());
         return categoryRepository.saveCategories(tenantId, categoriesSaveMap)
                 .toFuture()
                 .thenApply(response -> SavingReportingService.write(response, categoriesSaveMap.keySet()))
@@ -58,7 +65,7 @@ public class AdminRequestService implements AdminRequestRepository {
 
     @Override
     public CompletableFuture<RequestProcessingReport> deleteProduct(int tenantId, ProductDto product){
-        log.info("REQUESTED DELETING: {}",  product);
+        log.info("ADMIN OF TENANT: '{}', REQUESTED DELETING: {} PRODUCTS", tenantId, product.getId());
         return productRepository.requestDeletingProduct(tenantId, product)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
@@ -67,7 +74,7 @@ public class AdminRequestService implements AdminRequestRepository {
 
     @Override
     public CompletableFuture<RequestProcessingReport> editProduct(int tenantId, Map<String, String> productPropertyNewValueMap){
-        log.info("REQUESTED EDITING: {}", productPropertyNewValueMap);
+        log.info("ADMIN OF TENANT: '{}', REQUESTED EDITING: {}", tenantId, productPropertyNewValueMap.keySet());
         return productRepository.requestEditingProduct(tenantId, productPropertyNewValueMap)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
@@ -75,9 +82,13 @@ public class AdminRequestService implements AdminRequestRepository {
     }
 
     @Override
-    public CompletableFuture<RequestProcessingReport> editProductsCategories(int tenantId, String productId, Long[] categoriesIds) {
-        log.info("REQUESTED EDITING PRODUCT: '{}' NEW CATEGORIES: {}", productId, categoriesIds);
-        var productsCategoriesEditMap = createProductsCategoryEditMap(productId, categoriesIds);
+    public CompletableFuture<RequestProcessingReport> editProductsCategories(int tenantId, String productId, RelationEdit[] relationEdits) {
+        log.info("ADMIN OF TENANT: '{}', REQUESTED CHANGING RELATIONS OF PRODUCT '{}' WITH CATEGORIES: {}",
+                tenantId,
+                productId,
+                relationEdits
+        );
+        var productsCategoriesEditMap = createProductsCategoryEditMap(productId, relationEdits);
         return productRepository.requestEditingProduct(tenantId, productsCategoriesEditMap)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
@@ -85,9 +96,8 @@ public class AdminRequestService implements AdminRequestRepository {
     }
 
     @Override
-    public CompletableFuture<RequestProcessingReport> editProductsImageUrls(int tenantId, String productId, String[] imageUrlsIds) {
-        log.info("REQUESTED EDITING PRODUCT: '{}' NEW IMAGE URLS: {}", productId, imageUrlsIds);
-        var productsImageUrlsEditMap = createProductsImageUrlsEditMap(productId, imageUrlsIds);
+    public CompletableFuture<RequestProcessingReport> editProductsImageUrls(int tenantId, String productId, RelationEdit[] relationEdits) {
+        var productsImageUrlsEditMap = createProductsImageUrlsEditMap(productId, relationEdits);
         return productRepository.requestEditingProduct(tenantId, productsImageUrlsEditMap)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
@@ -95,9 +105,9 @@ public class AdminRequestService implements AdminRequestRepository {
     }
 
     @SneakyThrows
-    private Map<String, String> createProductsCategoryEditMap(@NonNull String productId, @NonNull Long[] categoriesIds){
+    private Map<String, String> createProductsCategoryEditMap(@NonNull String productId, RelationEdit[] relationEdits){
         checkProductId(productId);
-        var json = mapper.writeValueAsString(categoriesIds);
+        var json = mapper.writeValueAsString(relationEdits);
         return Map.ofEntries(
                 entry("ID", productId),
                 entry("CATEGORY", json)
@@ -105,8 +115,8 @@ public class AdminRequestService implements AdminRequestRepository {
     }
 
     @SneakyThrows
-    private Map<String, String> createProductsImageUrlsEditMap(@NonNull String productId, @NonNull String[] imageUrlsIds){
-        var json = mapper.writeValueAsString(imageUrlsIds);
+    private Map<String, String> createProductsImageUrlsEditMap(@NonNull String productId, RelationEdit[] relationEdits){
+        var json = mapper.writeValueAsString(relationEdits);
         return Map.ofEntries(
                 entry("ID", productId),
                 entry("PHOTO_URL", json)
