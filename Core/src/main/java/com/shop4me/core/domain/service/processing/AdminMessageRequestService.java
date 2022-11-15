@@ -85,6 +85,7 @@ public class AdminMessageRequestService implements AdminMessagingRequestReposito
 
     @Override
     public CompletableFuture<ProductDto[]> searchAndObtainProducts(int tenantId, ProductSearchFilterDto[] searchFilters) {
+        log.info("ADMIN OF TENANT: '{}', REQUESTED SEARCHING PRODUCT: {} ", tenantId, searchFilters);
         var correlationIdRef = new AtomicReference<String>();
         return CompletableFuture.supplyAsync(()-> productTopicListenerRepository.requestSearchingProduct(tenantId, searchFilters))
                 .thenAccept(correlationIdRef::set)
@@ -202,8 +203,9 @@ public class AdminMessageRequestService implements AdminMessagingRequestReposito
     }
 
     private ProductDto[] exceptionallyReturnEmptyArray(Throwable e){
-        if (!e.getClass().equals(NothingToObtain.class)) {
-            log.warn("ERROR DURING OBTAINING PRODUCTS: '{}' MESSAGE: {}", e.getCause(), e.getMessage());
+        var error = e.getCause();
+        if (!(error instanceof NothingToObtain)) {
+            log.warn("ERROR DURING OBTAINING PRODUCTS: '{}' MESSAGE: {}", error, error.getMessage());
         }
         return new ProductDto[0];
     }
