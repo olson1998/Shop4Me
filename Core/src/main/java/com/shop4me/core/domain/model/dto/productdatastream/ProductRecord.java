@@ -18,15 +18,12 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductRecord implements ProductDto {
 
-    @Getter
     @JsonProperty(value = "id")
     private Long id;
 
-    @Getter
     @JsonProperty("name")
     private String name;
 
-    @Getter
     @JsonProperty("description")
     private String description;
 
@@ -73,5 +70,10 @@ public class ProductRecord implements ProductDto {
         }else {
             return Collections.emptyList();
         }
+    }
+
+    public ProductRecord(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
 }

@@ -12,6 +12,7 @@ import com.shop4me.productdatastream.domain.port.objects.dto.ReviewDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Set;
 
@@ -39,6 +40,10 @@ public class Product implements ProductDto {
     @JsonProperty(value = "creating_timestamp", access = JsonProperty.Access.READ_ONLY)
     private String creatingTimestamp;
 
+    @Setter
+    @JsonIgnore
+    private String correlationId;
+
     @JsonProperty(value = "reviews", access = JsonProperty.Access.READ_ONLY)
     private Set<ReviewDto> reviewsSet;
 
@@ -56,7 +61,8 @@ public class Product implements ProductDto {
                 id,
                 tenantId,
                 name,
-                description
+                description,
+                correlationId
         );
     }
 

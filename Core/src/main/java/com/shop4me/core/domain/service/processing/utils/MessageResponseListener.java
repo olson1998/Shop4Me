@@ -34,4 +34,8 @@ public class MessageResponseListener implements ResponseListener {
         this.notifyAll();
         this.responseReceived = true;
     }
+
+    public static MessageResponseListener create(String messageId){
+        return new MessageResponseListener(messageId);
+    }
 }

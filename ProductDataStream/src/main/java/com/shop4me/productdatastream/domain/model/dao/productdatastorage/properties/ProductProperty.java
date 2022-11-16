@@ -8,5 +8,5 @@ public enum ProductProperty {
     DESCRIPTION,
     PHOTO_URL,
 
-
+    CORRELATION_ID
 }

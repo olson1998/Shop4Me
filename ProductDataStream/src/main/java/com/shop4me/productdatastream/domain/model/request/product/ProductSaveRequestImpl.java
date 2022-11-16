@@ -59,6 +59,7 @@ public class ProductSaveRequestImpl implements ProductSaveRequest {
 
         products.keySet().forEach(correlationId -> {
             var product = products.get(correlationId);
+            product.setCorrelationId(correlationId);
             product.setTenantId(tenantId);
             productsDtoMap.put(correlationId, product);
         });

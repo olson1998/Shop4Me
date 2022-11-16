@@ -17,7 +17,7 @@ public class AffectedRowsReportingServing {
         if(affectedRows == 1){
             return new RequestProcessingReportImpl(RequestProcessingStatus.SUCCESS.name());
         } else if (affectedRows ==0) {
-            return new RequestProcessingReportImpl(RequestProcessingStatus.FAILED.name());
+            return new RequestProcessingReportImpl(RequestProcessingStatus.FAILURE.name());
         }else if (affectedRows == null){
             return new RequestProcessingReportImpl(RequestProcessingStatus.UNKNOWN.name());
         }else {

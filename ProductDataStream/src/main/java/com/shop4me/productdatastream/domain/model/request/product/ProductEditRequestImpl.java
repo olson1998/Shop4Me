@@ -12,6 +12,8 @@ import lombok.*;
 
 import java.util.*;
 
+import static com.shop4me.productdatastream.domain.model.dao.productdatastorage.properties.ProductProperty.CORRELATION_ID;
+
 public class ProductEditRequestImpl implements ProductEditRequest {
 
     private final Map<ProductProperty, String> editMap;
@@ -29,6 +31,12 @@ public class ProductEditRequestImpl implements ProductEditRequest {
         writeSet(query);
         query.append(" where p.id=").append(id);
         query.append(" and p.tenantId=").append(tenantId);
+        if(editMap.containsKey(CORRELATION_ID)){
+            var correlationId = editMap.get(CORRELATION_ID);
+            query.append(" and p.correlationId='")
+                    .append(correlationId)
+                    .append("'");
+        }
         return query.toString();
     }
 

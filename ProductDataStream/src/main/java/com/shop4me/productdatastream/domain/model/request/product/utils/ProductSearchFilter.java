@@ -65,6 +65,13 @@ public class ProductSearchFilter implements ProductSearchFilterDto {
                 else if (operator.equals(Operator.NOT)){
                     return "p.description not like '%" + value + "%' ";
                 }
+            }case CORRELATION_ID -> {
+                if(operator.equals(Operator.LIKE)){
+                    return "p.correlationId like '%" + value + "%' ";
+                }
+                else if (operator.equals(Operator.NOT)){
+                    return "p.correlationId not like '%" + value + "%' ";
+                }
             }
         }
         return "";

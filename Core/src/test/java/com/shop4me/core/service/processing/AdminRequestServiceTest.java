@@ -37,12 +37,6 @@ class AdminRequestServiceTest {
     @Mock
     private CategoryRepository categoryRepository;
 
-    @Mock
-    private UUID productSavingCorrelationId;
-
-    @Captor
-    private ArgumentCaptor<Map<String, String>> mapStrStrCaptor;
-
     private static final String PRODUCT_1_SAVING_CORRELATION_ID = UUID.randomUUID().toString();
 
     private static final String PRODUCT_2_SAVING_CORRELATION_ID = UUID.randomUUID().toString();

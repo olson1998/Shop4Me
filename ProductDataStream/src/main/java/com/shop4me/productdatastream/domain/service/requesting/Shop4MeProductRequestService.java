@@ -40,6 +40,11 @@ public class Shop4MeProductRequestService implements ProductRequestHandler {
                         ProductSearchRequestImpl.fromInboundMessage(inboundMsg)
                 );
             }
+            case SEARCH_MANY -> {
+                return productSearchingService.execute(
+                        ProductMultiSearchRequestImpl.fromInboundMessage(inboundMsg)
+                );
+            }
             case SAVE -> {
                 return productSavingService.execute(
                         ProductSaveRequestImpl.fromInboundMessage(inboundMsg)

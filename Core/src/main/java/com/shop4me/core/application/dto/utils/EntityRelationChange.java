@@ -2,10 +2,12 @@ package com.shop4me.core.application.dto.utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shop4me.core.domain.port.dto.utils.RelationEdit;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@AllArgsConstructor
 public class EntityRelationChange implements RelationEdit {
 
     @JsonProperty(value = "operation", required = true)

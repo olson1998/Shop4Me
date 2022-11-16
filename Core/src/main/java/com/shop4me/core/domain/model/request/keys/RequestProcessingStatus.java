@@ -6,5 +6,5 @@ public enum RequestProcessingStatus {
     PARTLY_SUCCESS,
     UNKNOWN,
     ERROR,
-    FAILED
+    FAILURE
 }

@@ -1,6 +1,5 @@
 package com.shop4me.core.domain.service.processing;
 
-import com.shop4me.core.application.dto.productdatastream.Review;
 import com.shop4me.core.domain.port.dto.productdatastream.ReviewDto;
 import com.shop4me.core.domain.port.dto.response.RequestProcessingReport;
 import com.shop4me.core.domain.port.requesting.CustomerRequestRepository;
@@ -39,15 +38,6 @@ public class CustomerRequestService implements CustomerRequestRepository {
     public CompletableFuture<RequestProcessingReport> editCustomerReview(int tenantId, Map<String, String> reviewPropertyNewValueMap){
         log.info("CUSTOMER ip: {}, requested to edit: {}", "?", reviewPropertyNewValueMap);
         return reviewRepository.editReview(tenantId, reviewPropertyNewValueMap)
-                .toFuture()
-                .thenApply(AffectedRowsReportingServing::affectedRowsReport)
-                .exceptionally(ErrorReportingService::error);
-    }
-
-    @Override
-    public CompletableFuture<RequestProcessingReport> deleteCustomerReview(int tenantId, Review review){
-        log.info("CUSTOMER ip: {}, requested to delete: {}", "?", review);
-        return reviewRepository.deleteReview(tenantId, review)
                 .toFuture()
                 .thenApply(AffectedRowsReportingServing::affectedRowsReport)
                 .exceptionally(ErrorReportingService::error);

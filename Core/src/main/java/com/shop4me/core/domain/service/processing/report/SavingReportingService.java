@@ -27,7 +27,7 @@ public class SavingReportingService {
         if(CHECK_IF_SUCCESS.test(persistingResults)){
             return SUCCESS.name();
         } else if (CHECK_IF_FAILURE.test(persistingResults)) {
-            return FAILED.name();
+            return FAILURE.name();
         }else {
             return PARTLY_SUCCESS.name();
         }

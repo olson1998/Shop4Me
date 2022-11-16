@@ -50,7 +50,7 @@ public class ProductSearchRequestImpl implements ProductSearchRequest {
 
     private void writeJpqlWhereClauses(StringBuilder query, @NonNull List<ProductSearchFilter> combinations){
         var combinationsQty = combinations.size();
-        if(combinations.size()>0){
+        if(!combinations.isEmpty()){
             for(int i =0; i < combinationsQty; i++){
                 var combination = combinations.get(i);
                 writeJpqlWhere(query, combination);
@@ -199,5 +199,10 @@ public class ProductSearchRequestImpl implements ProductSearchRequest {
         }
         sb.append(")");
         return sb.toString();
+    }
+
+    protected ProductSearchRequestImpl(List<ProductSearchFilter> productSearchFilters, int tenantId) {
+        this.tenantId = tenantId;
+        this.filters = productSearchFilters.toArray(ProductSearchFilter[]::new);
     }
 }

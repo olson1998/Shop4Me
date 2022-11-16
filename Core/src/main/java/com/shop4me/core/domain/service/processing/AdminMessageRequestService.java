@@ -1,10 +1,11 @@
 package com.shop4me.core.domain.service.processing;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shop4me.core.application.dto.utils.EntityRelationChange;
 import com.shop4me.core.domain.model.dto.productdatastream.ProductRecord;
 import com.shop4me.core.domain.model.exception.InboundMessageErrorException;
 import com.shop4me.core.domain.model.exception.NothingToObtain;
+import com.shop4me.core.domain.model.request.utils.ProductSearchFilter;
 import com.shop4me.core.domain.port.dto.InboundMsg;
 import com.shop4me.core.domain.port.dto.productdatastream.CategoryDto;
 import com.shop4me.core.domain.port.dto.productdatastream.ProductDto;
@@ -23,15 +24,17 @@ import com.shop4me.core.domain.service.processing.utils.PayloadReader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.LinkedMultiValueMap;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.shop4me.core.application.dto.utils.EntityRelationOperation.ADD;
+import static com.shop4me.core.domain.service.processing.utils.PayloadTypeRef.MAP_STR_STR_REF;
+import static com.shop4me.core.domain.service.processing.utils.PayloadTypeRef.MULTI_MAP_STR_LONG;
+import static java.lang.Thread.sleep;
 import static java.util.Map.entry;
 
 @Slf4j
@@ -46,6 +49,7 @@ public class AdminMessageRequestService implements AdminMessagingRequestReposito
     private final CategoryTopicListenerRepository categoryTopicListenerRepository;
 
     private final MessageResponseListenersManager messageResponseListenersManager;
+
     private final ConcurrentHashMap<String, InboundMsg> receivedMessages = new ConcurrentHashMap<>();
 
     public static final String ADMIN_SERVICE_FINGERPRINT = UUID.randomUUID().toString();
@@ -66,12 +70,13 @@ public class AdminMessageRequestService implements AdminMessagingRequestReposito
     @Override
     public CompletableFuture<RequestProcessingReport> saveProducts(int tenantId, ProductDto[] products) {
         log.info("ADMIN OF TENANT: '{}', REQUESTED SAVING: {} PRODUCTS",tenantId, products.length);
-        var correlationIdCollRef = new AtomicReference<Collection<String>>();
+        var productSaveMapRef = new AtomicReference<Map<String, ProductDto>>();
+        var productPersistingStatusMapRef = new AtomicReference<Map<String, String>>();
         var correlationIdRef = new AtomicReference<String>();
         return CompletableFuture.supplyAsync(()-> createCorrelationIdsArray(products.length))
                 .thenApply(correlationIds-> createProductSavingMap(correlationIds, products))
-                .thenApply(productSaveMap-> saveCorrelationIdsOfProducts(correlationIdCollRef, productSaveMap))
-                .thenApply(productSaveMap-> productTopicListenerRepository.requestSavingProduct(tenantId, productSaveMap))
+                .thenAccept(productSaveMapRef::set)
+                .thenApply(empty-> productTopicListenerRepository.requestSavingProduct(tenantId, productSaveMapRef.get()))
                 .thenAccept(correlationIdRef::set)
                 .thenApply(empty-> createResponseObservation(correlationIdRef.get()))
                 .thenAccept(MessageResponseListener::waitUntilResponse)
@@ -79,7 +84,19 @@ public class AdminMessageRequestService implements AdminMessagingRequestReposito
                 .thenApply(this::resolveResponse)
                 .thenApply(PayloadReader::read)
                 .thenApply(this::readResponseMap)
-                .thenApply(response-> SavingReportingService.write(response, correlationIdCollRef.get()))
+                .thenAccept(productPersistingStatusMapRef::set)
+                .thenApply(empty-> resolveSuccessfullyPersistedProducts(productSaveMapRef.get(), productPersistingStatusMapRef.get()))
+                .thenApply(this::createProductSearchFiltersOfPersistedProducts)
+                .thenApply(multiSearchFilters-> productTopicListenerRepository.requestMultiSearchProduct(tenantId, multiSearchFilters))
+                .thenAccept(correlationIdRef::set)
+                .thenApply(empty-> createResponseObservation(correlationIdRef.get()))
+                .thenAccept(MessageResponseListener::waitUntilResponse)
+                .thenApply(empty-> obtainInboundMessage(correlationIdRef.get()))
+                .thenApply(this::resolveResponse)
+                .thenApply(PayloadReader::read)
+                .thenApply(this::readResponseOfMultiProductSearch)
+                .thenAccept(response-> updatedPersistedProductsCategories(response, productSaveMapRef.get(), tenantId))
+                .thenApply(empty-> SavingReportingService.write(productPersistingStatusMapRef.get(), productSaveMapRef.get().keySet()))
                 .exceptionally(ErrorReportingService::error);
     }
 
@@ -193,7 +210,7 @@ public class AdminMessageRequestService implements AdminMessagingRequestReposito
     }
 
     private MessageResponseListener createResponseObservation(String correlationId){
-        var listener = new MessageResponseListener(correlationId);
+        var listener = MessageResponseListener.create(correlationId);
         messageResponseListenersManager.registerListener(
                 ADMIN_SERVICE_FINGERPRINT,
                 correlationId,
@@ -208,12 +225,6 @@ public class AdminMessageRequestService implements AdminMessagingRequestReposito
             log.warn("ERROR DURING OBTAINING PRODUCTS: '{}' MESSAGE: {}", error, error.getMessage());
         }
         return new ProductDto[0];
-    }
-
-    private Map<String, ProductDto> saveCorrelationIdsOfProducts(AtomicReference<Collection<String>> correlationIdsRef,
-                                                       Map<String, ProductDto> productSavingMap){
-        correlationIdsRef.set(productSavingMap.keySet());
-        return productSavingMap;
     }
 
     private Map<String, CategoryDto> saveCorrelationIdsOfCategories(AtomicReference<Collection<String>> correlationIdsRef,
@@ -250,6 +261,18 @@ public class AdminMessageRequestService implements AdminMessagingRequestReposito
         return correlationIdArray;
     }
 
+    private LinkedMultiValueMap<String, ProductSearchFilter> createProductSearchFiltersOfPersistedProducts(Map<String, ProductDto> successPerstProducts){
+        var productMultiSearchMap = new LinkedMultiValueMap<String, ProductSearchFilter>();
+        successPerstProducts.forEach((correlationId, product)->{
+            var productSearchFilters = List.of(
+                    new ProductSearchFilter("NAME", "LIKE", product.getName()),
+                    new ProductSearchFilter("CORRELATION_ID", "LIKE", correlationId)
+            );
+            productMultiSearchMap.put(correlationId, productSearchFilters);
+        });
+        return productMultiSearchMap;
+    }
+
     @SneakyThrows
     private Map<String, String> createProductCategoriesEditMap(String productId, RelationEdit[] relationEdits){
         var categoriesJson = objectMapper.writeValueAsString(relationEdits);
@@ -261,8 +284,7 @@ public class AdminMessageRequestService implements AdminMessagingRequestReposito
 
     @SneakyThrows
     private Map<String, String> readResponseMap(String json) {
-        return objectMapper.readValue(json, new TypeReference<>() {
-        });
+        return objectMapper.readValue(json, MAP_STR_STR_REF);
     }
 
     @SneakyThrows
@@ -278,5 +300,47 @@ public class AdminMessageRequestService implements AdminMessagingRequestReposito
     @SneakyThrows
     private ProductDto[] readResponseProductsArray(String json){
         return objectMapper.readValue(json, ProductRecord[].class);
+    }
+
+    @SneakyThrows
+    private String writeCategoriesIdsAsString(List<Long> categoriesIds){
+        return objectMapper.writeValueAsString(categoriesIds);
+    }
+
+    @SneakyThrows
+    private LinkedMultiValueMap<String, Long> readResponseOfMultiProductSearch(String json){
+        return objectMapper.readValue(json, MULTI_MAP_STR_LONG);
+    }
+
+    private Map<String, ProductDto> resolveSuccessfullyPersistedProducts(Map<String, ProductDto> productSaveMap,
+                                                                  Map<String, String> persistingResultMap){
+        var successfullyPersistedProducts = new HashMap<String, ProductDto>();
+        persistingResultMap.forEach((correlationId, status)->{
+            if(status.equals("SUCCESS")){
+                var product = productSaveMap.get(correlationId);
+                successfullyPersistedProducts.put(correlationId, product);
+            }
+        });
+        return successfullyPersistedProducts;
+    }
+
+    @SneakyThrows
+    private void updatedPersistedProductsCategories(LinkedMultiValueMap<String, Long> persistedProductsIds,
+                                                    Map<String, ProductDto> productSaveMap,
+                                                    int tenantId){
+        persistedProductsIds.forEach((correlationId, ids)->{
+            if(ids.size() == 1){
+                var id = ids.get(0)+"";
+                var categories = productSaveMap.get(correlationId);
+                var categoriesIds = categories.getCategories().stream()
+                        .map(CategoryDto::getId)
+                        .toList();
+                var categoriesJson = writeCategoriesIdsAsString(categoriesIds);
+                editProductsCategories(tenantId, id, new RelationEdit[]{new EntityRelationChange(ADD, categoriesJson)});
+
+            }else {
+                log.error("NOT UNIQUE");
+            }
+        });
     }
 }

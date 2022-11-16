@@ -18,7 +18,7 @@ public class Category implements CategoryDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
 
-    @JsonProperty(value = "name", required = true)
+    @JsonProperty(value = "name")
     private String name;
 
     @JsonProperty(value = "path")

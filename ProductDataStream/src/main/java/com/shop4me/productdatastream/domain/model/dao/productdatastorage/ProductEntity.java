@@ -33,7 +33,6 @@ public class ProductEntity implements ProductDao {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_generator")
     private Long id;
 
-
     @Column(name = "TENANT", nullable = false)
     private int tenantId;
 
@@ -49,6 +48,9 @@ public class ProductEntity implements ProductDao {
     @ColumnDefault("CURRENT_TIMESTAMP()")
     @Column(name = "CREATING_TIME", updatable = false)
     private Timestamp creatingTimestamp;
+
+    @Column(name = "CORRELATION", nullable = false, updatable = false, unique = true)
+    private String correlationId;
 
     @OneToMany(mappedBy = "productId", fetch = FetchType.EAGER)
     private Set<ReviewEntity> reviewsSet;
@@ -74,6 +76,7 @@ public class ProductEntity implements ProductDao {
                 name,
                 description,
                 creatingTimestampString(creatingTimestamp),
+                null,
                 reviewDtoSet(),
                 imageUrlDtoSet(),
                 categoryDtoSet()
@@ -122,6 +125,14 @@ public class ProductEntity implements ProductDao {
         }else {
             return null;
         }
+    }
+
+    public ProductEntity(Long id, int tenantId, String name, String description, String correlationId) {
+        this.id = id;
+        this.tenantId = tenantId;
+        this.name = name;
+        this.description = description;
+        this.correlationId = correlationId;
     }
 
     public ProductEntity(Long id, int tenantId, String name, String description) {
